@@ -456,6 +456,76 @@
 </div>
 <p class="tagline">✨ Let's create your memories 💕</p>
 
+<!-- Admin modal -->
+<div class="modal-bg" id="adminModal">
+  <div class="modal-box admin-box">
+    <button class="close-modal" id="closeAdmin">✕</button>
+    <h3>⚙️ Panel Admin</h3>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-admin="stiker">😊 Emot</button>
+      <button class="admin-tab" data-admin="tema">🎨 Tema</button>
+      <button class="admin-tab" data-admin="efek">🪄 Efek</button>
+    </div>
+
+    <!-- Emot -->
+    <div class="admin-panel show" id="admin-stiker">
+      <div class="admin-add-row">
+        <input type="text" id="adminEmotInput" placeholder="Masukkan emot baru (contoh: 🍕)">
+        <button class="btn primary" id="adminAddEmot">➕ Tambah</button>
+      </div>
+      <div class="section-label">Daftar Emot</div>
+      <div id="adminEmotList"></div>
+      <p class="hint">Tambahkan atau hapus emot untuk stiker yang bisa dipakai di preview.</p>
+    </div>
+
+    <!-- Tema -->
+    <div class="admin-panel" id="admin-tema">
+      <div class="admin-add-row">
+        <input type="text" id="adminThemeName" placeholder="Nama tema">
+        <input type="color" id="adminThemeBg" value="#ffffff">
+        <input type="color" id="adminThemeAccent" value="#7ab8e8">
+      </div>
+      <div class="admin-add-row">
+        <select id="adminThemeStyle">
+          <option value="polaroid">Polaroid</option>
+          <option value="filmstrip">Filmstrip</option>
+          <option value="airmail">Airmail</option>
+          <option value="minimal">Minimal</option>
+          <option value="dotted">Dotted</option>
+          <option value="plain">Polos</option>
+        </select>
+        <button class="btn primary" id="adminAddTheme">➕ Tambah Tema</button>
+      </div>
+      <div class="section-label">Daftar Tema (Background Polaroid)</div>
+      <div id="adminThemeList"></div>
+      <p class="hint">Tambahkan tema baru (background polaroid) atau hapus tema yang tidak dipakai.</p>
+    </div>
+
+    <!-- Efek -->
+    <div class="admin-panel" id="admin-efek">
+      <div class="admin-add-row">
+        <input type="text" id="adminEffectName" placeholder="Nama efek (contoh: Blur)">
+        <input type="color" id="adminEffectColor" value="#ffffff">
+      </div>
+      <div class="admin-add-row">
+        <select id="adminEffectType">
+          <option value="vignette">Vignette</option>
+          <option value="grain">Grain</option>
+          <option value="glow">Glow</option>
+          <option value="sepia">Sepia</option>
+          <option value="bw">Hitam Putih</option>
+          <option value="blur">Blur</option>
+          <option value="shadow">Shadow</option>
+        </select>
+        <button class="btn primary" id="adminAddEffect">➕ Tambah Efek</button>
+      </div>
+      <div class="section-label">Daftar Efek</div>
+      <div id="adminEffectList"></div>
+      <p class="hint">Tambahkan atau hapus efek foto. Efek "Tanpa Efek" tidak bisa dihapus.</p>
+    </div>
+  </div>
+</div>
+
 <!-- Galeri modal -->
 <div class="modal-bg" id="galeriModal">
   <div class="modal-box">
@@ -830,18 +900,22 @@ buildBorderSwatches();
     }
   });
 
-  // sticker picker
+// sticker picker
   const stickerContainer = document.getElementById('stickerOptions');
-  stickerChoices.forEach(emoji=>{
-    const s = document.createElement('div');
-    s.className = 'sticker-pick';
-    s.textContent = emoji;
-    s.addEventListener('click', ()=>{
-      state.stickers.push({emoji, xPct: 0.5, yPct: 0.5, size: state.stickerSize});
-      renderAll();
+  function rebuildStickerPicker(){
+    stickerContainer.innerHTML = '';
+    stickerChoices.forEach(emoji=>{
+      const s = document.createElement('div');
+      s.className = 'sticker-pick';
+      s.textContent = emoji;
+      s.addEventListener('click', ()=>{
+        state.stickers.push({emoji, xPct: 0.5, yPct: 0.5, size: state.stickerSize});
+        renderAll();
+      });
+      stickerContainer.appendChild(s);
     });
-    stickerContainer.appendChild(s);
-  });
+  }
+  rebuildStickerPicker();
 
   // caption input -> adds/updates text object (draggable, positioned freely like stickers)
   // sekarang juga membawa gaya yang sedang dipilih (font, warna, background, dsb) — sama seperti preview besar di atas
@@ -1213,13 +1287,15 @@ function computeLayout(count){
         ctx.drawImage(img, px, py, PHOTO_W, PHOTO_H);
         ctx.restore();
 
-        if(state.effect === 'vignette'){
+const effDef = effects.find(e=>e.id===state.effect);
+        const effType = effDef ? (effDef.type || effDef.id) : null;
+        if(effType === 'vignette'){
           const grad = ctx.createRadialGradient(px+PHOTO_W/2, py+PHOTO_H/2, PHOTO_H*0.2, px+PHOTO_W/2, py+PHOTO_H/2, PHOTO_H*0.75);
           grad.addColorStop(0,'rgba(0,0,0,0)');
           grad.addColorStop(1,'rgba(0,0,0,0.35)');
           ctx.fillStyle = grad;
           ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
-        } else if(state.effect === 'grain'){
+        } else if(effType === 'grain'){
           ctx.save();
           ctx.globalAlpha = 0.06;
           for(let g=0; g<250; g++){
@@ -1227,11 +1303,27 @@ function computeLayout(count){
             ctx.fillRect(px+Math.random()*PHOTO_W, py+Math.random()*PHOTO_H, 1.5, 1.5);
           }
           ctx.restore();
-        } else if(state.effect === 'glow'){
+        } else if(effType === 'glow'){
           ctx.save();
           ctx.globalAlpha = 0.18;
           ctx.fillStyle = '#fff6d0';
           ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
+          ctx.restore();
+        } else if(effType === 'blur'){
+          ctx.save();
+          ctx.filter = 'blur(3px)';
+          ctx.drawImage(img, px, py, PHOTO_W, PHOTO_H);
+          ctx.restore();
+        } else if(effType === 'shadow'){
+          ctx.save();
+          ctx.globalAlpha = 0.25;
+          ctx.fillStyle = '#000';
+          ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
+          ctx.restore();
+        } else if(effDef && effDef.css && effDef.css !== 'none'){
+          ctx.save();
+          ctx.filter = effDef.css;
+          ctx.drawImage(img, px, py, PHOTO_W, PHOTO_H);
           ctx.restore();
         }
       } else {
@@ -1431,6 +1523,142 @@ async function drawStripSilent(ctx, canvasEl, count){
       }
     }, 'image/png');
   });
+
+// ---------------- ADMIN PANEL ----------------
+  const adminModal = document.getElementById('adminModal');
+  const adminEmotInput = document.getElementById('adminEmotInput');
+  const adminEmotList = document.getElementById('adminEmotList');
+
+  function openAdmin(){ refreshAdminLists(); adminModal.classList.add('show'); }
+  function closeAdmin(){ adminModal.classList.remove('show'); }
+
+  document.getElementById('btnAdmin').addEventListener('click', openAdmin);
+  document.getElementById('closeAdmin').addEventListener('click', closeAdmin);
+  adminModal.addEventListener('click', (e)=>{ if(e.target === adminModal) closeAdmin(); });
+
+  // admin sub-tab switching
+  document.querySelectorAll('.admin-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('show'));
+      tab.classList.add('active');
+      document.getElementById('admin-'+tab.dataset.admin).classList.add('show');
+    });
+  });
+
+  // ---------- Emot management ----------
+  function refreshEmotList(){
+    adminEmotList.innerHTML = '';
+    stickerChoices.forEach((emoji, i)=>{
+      const row = document.createElement('div');
+      row.className = 'admin-item';
+      row.innerHTML = '<span>' + emoji + '</span>';
+      const del = document.createElement('button');
+      del.className = 'del';
+      del.textContent = '🗑️';
+      del.addEventListener('click', ()=>{
+        stickerChoices.splice(i, 1);
+        refreshEmotList();
+        rebuildStickerPicker();
+        renderAll();
+      });
+      row.appendChild(del);
+      adminEmotList.appendChild(row);
+    });
+  }
+
+  document.getElementById('adminAddEmot').addEventListener('click', ()=>{
+    const val = adminEmotInput.value.trim();
+    if(!val) return;
+    stickerChoices.push(val);
+    adminEmotInput.value = '';
+    refreshEmotList();
+    rebuildStickerPicker();
+    renderAll();
+  });
+
+  // ---------- Theme management ----------
+  const adminThemeList = document.getElementById('adminThemeList');
+  function refreshThemeList(){
+    adminThemeList.innerHTML = '';
+    themes.forEach((t, i)=>{
+      const row = document.createElement('div');
+      row.className = 'admin-item';
+      row.innerHTML = '<span><span class="mini-swatch" style="background:' + t.bg + '"></span>' + t.name + '</span>';
+      const del = document.createElement('button');
+      del.className = 'del';
+      del.textContent = '🗑️';
+      del.addEventListener('click', ()=>{
+        if(themes.length <= 1){ alert('Minimal harus ada 1 tema.'); return; }
+        if(state.themeIndex === i) state.themeIndex = 0;
+        if(state.themeIndex > i) state.themeIndex--;
+        themes.splice(i, 1);
+        refreshThemeList();
+        buildThemeThumbs();
+        renderAll();
+      });
+      row.appendChild(del);
+      adminThemeList.appendChild(row);
+    });
+  }
+
+  document.getElementById('adminAddTheme').addEventListener('click', ()=>{
+    const name = document.getElementById('adminThemeName').value.trim();
+    if(!name){ alert('Isi nama tema dulu.'); return; }
+    const bg = document.getElementById('adminThemeBg').value;
+    const accent = document.getElementById('adminThemeAccent').value;
+    const style = document.getElementById('adminThemeStyle').value;
+    const bottomSpace = style === 'polaroid' ? 70 : 0;
+    themes.push({name, style, bg, frame: bg, accent, bottomSpace});
+    document.getElementById('adminThemeName').value = '';
+    refreshThemeList();
+    buildThemeThumbs();
+    renderAll();
+  });
+
+  // ---------- Effect management ----------
+  const adminEffectList = document.getElementById('adminEffectList');
+  function refreshEffectList(){
+    adminEffectList.innerHTML = '';
+    effects.forEach((e, i)=>{
+      const row = document.createElement('div');
+      row.className = 'admin-item';
+      row.innerHTML = '<span><span class="mini-swatch" style="background:' + e.color + '"></span>' + e.label + '</span>';
+      const del = document.createElement('button');
+      del.className = 'del';
+      del.textContent = '🗑️';
+      del.disabled = e.id === 'none';
+      del.style.opacity = e.id === 'none' ? '.35' : '1';
+      del.addEventListener('click', ()=>{
+        effects.splice(i, 1);
+        if(state.effect === e.id) state.effect = 'none';
+        refreshEffectList();
+        buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
+        renderAll();
+      });
+      row.appendChild(del);
+      adminEffectList.appendChild(row);
+    });
+  }
+
+  document.getElementById('adminAddEffect').addEventListener('click', ()=>{
+    const name = document.getElementById('adminEffectName').value.trim();
+    if(!name){ alert('Isi nama efek dulu.'); return; }
+    const color = document.getElementById('adminEffectColor').value;
+    const type = document.getElementById('adminEffectType').value;
+    const id = 'fx_' + Date.now();
+    effects.push({id, label: name, type, color});
+    document.getElementById('adminEffectName').value = '';
+    refreshEffectList();
+    buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
+    renderAll();
+  });
+
+  function refreshAdminLists(){
+    refreshEmotList();
+    refreshThemeList();
+    refreshEffectList();
+  }
 
   // ---------------- INIT ----------------
   buildThemeThumbs();
