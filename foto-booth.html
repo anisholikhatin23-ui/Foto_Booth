@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foto Booth 📷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@1,600&family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fbf3e6;
+    --cream-deep:#f4e9d6;
+    --blue:#7ab8e8;
+    --blue-soft:#dbeefc;
+    --pink:#f6a9c3;
+    --pink-soft:#fde3ec;
+    --yellow:#f7cf58;
+    --yellow-soft:#fdf0cf;
+    --ink:#4a4038;
+    --ink-soft:#8a7f72;
+    --paper:#fffdf9;
+    --line:#e7dcc8;
+    --shadow: 0 8px 24px rgba(150, 120, 80, 0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 10% 10%, #fffdf7 0, transparent 40%),
+      var(--cream);
+    min-height:100vh;
+    padding-bottom:40px;
+  }
+  a,button{font-family:inherit;}
+  h1,h2,h3{font-family:'Fredoka', sans-serif; margin:0;}
+
+  /* ---------- decorative bits ---------- */
+  .sticker{position:absolute; font-size:22px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12)); pointer-events:none; user-select:none;}
+  .tape{
+    position:absolute; width:90px; height:34px;
+    background:repeating-linear-gradient(45deg, #cfe3f5, #cfe3f5 6px, #bcd9f0 6px, #bcd9f0 12px);
+    opacity:.75; border-radius:2px; box-shadow:0 2px 6px rgba(0,0,0,.08);
+  }
+  .tape.pink{background:repeating-linear-gradient(45deg,#f9d2e0,#f9d2e0 6px,#f5b9d0 6px,#f5b9d0 12px);}
+
+  /* ---------- header ---------- */
+  .topbar{
+    max-width:1400px; margin:0 auto; padding:26px 32px 10px;
+    display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
+  }
+  .logo{
+    font-family:'Fredoka', sans-serif; font-size:34px; font-weight:700;
+    display:flex; align-items:center; gap:6px; position:relative;
+  }
+  .logo .blue{color:var(--blue); text-shadow:1px 1px 0 #fff;}
+  .logo .pink{color:var(--pink); text-shadow:1px 1px 0 #fff;}
+  .tabs{display:flex; gap:14px; flex-wrap:wrap;}
+  .tab-btn{
+    border:none; cursor:pointer; padding:12px 22px; border-radius:20px;
+    text-align:left; font-weight:600; font-size:15px; color:var(--ink);
+    box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .15s ease;
+    display:flex; align-items:center; gap:10px;
+  }
+  .tab-btn small{display:block; font-weight:500; font-size:12px; opacity:.75;}
+  .tab-btn .icon{
+    width:34px; height:34px; border-radius:50%; background:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:16px; flex:none;
+  }
+  .tab-btn:hover{transform:translateY(-2px);}
+  .tab-btn.camera{background:var(--blue-soft);}
+  .tab-btn.edit{background:var(--pink-soft);}
+  .tab-btn.cetak{background:var(--yellow-soft);}
+  .tab-btn.active{outline:2.5px solid var(--ink); outline-offset:2px;}
+  .header-icons{display:flex; gap:10px;}
+  .header-icons button{
+    width:44px; height:44px; border-radius:50%; border:1.5px solid #e9dcc4; background:#fff;
+    cursor:pointer; font-size:17px; box-shadow:var(--shadow);
+  }
+
+  /* ---------- workspace ---------- */
+  .workspace{
+    max-width:820px; margin:14px auto 0; padding:0 32px;
+  }
+  .panel{
+    position:relative; background:var(--paper); border-radius:26px; padding:26px;
+    box-shadow:var(--shadow); border:1px solid #f1e6cf; overflow:hidden;
+    display:none;
+  }
+  .panel.active-panel{
+    display:block;
+    animation:panelIn .3s ease;
+  }
+  @keyframes panelIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .step-track{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    max-width:820px; margin:0 auto 18px; padding:0 32px;
+  }
+  .step-track .step-dot{
+    width:8px; height:8px; border-radius:50%; background:var(--line);
+  }
+  .step-track .step-dot.on{background:var(--ink); width:22px; border-radius:6px; transition:all .2s ease;}
+  .ribbon{
+    display:inline-flex; align-items:center; gap:8px; color:#fff; font-family:'Fredoka';
+    font-weight:600; font-size:15px; letter-spacing:.5px; padding:9px 22px 9px 16px;
+    border-radius:8px 14px 14px 8px; margin-bottom:18px; position:relative;
+  }
+  .ribbon.blue{background:var(--blue);}
+  .ribbon.pink{background:var(--pink);}
+  .ribbon.yellow{background:var(--yellow); color:#5c4a1c;}
+  .section-label{font-weight:700; font-size:14px; margin:4px 0 10px; display:flex; align-items:center; gap:6px;}
+
+  /* ---------- camera panel ---------- */
+  .camera-body{display:flex; gap:16px;}
+  .thumbstrip{
+    display:flex; flex-direction:column; gap:10px; width:76px; flex:none;
+  }
+  .thumb-slot{
+    width:76px; height:76px; border-radius:10px; background:#1c1c1c; border:3px solid var(--blue-soft);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;
+  }
+  .thumb-slot img{width:100%; height:100%; object-fit:cover;}
+  .cam-preview-wrap{
+    flex:1; position:relative; border-radius:18px; background:#eef1f4; min-height:340px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden; border:3px solid #eee;
+  }
+  .cam-preview-wrap video{width:100%; height:100%; object-fit:cover; display:none;}
+  .cam-placeholder{color:#9aa2ac; display:flex; flex-direction:column; align-items:center; gap:10px; font-weight:600;}
+  .cam-placeholder .big-icon{font-size:44px;}
+  .countdown{
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    font-family:'Fredoka'; font-size:90px; color:#fff; background:rgba(0,0,0,.25); font-weight:700;
+  }
+  .flash{position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none;}
+
+  .btn-row{display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;}
+  .btn{
+    border:none; cursor:pointer; padding:13px 18px; border-radius:16px; font-weight:700; font-size:14.5px;
+    display:flex; align-items:center; gap:8px; box-shadow:var(--shadow); transition:transform .12s;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+  .btn.primary{background:var(--blue); color:#fff;}
+  .btn.secondary{background:var(--pink); color:#fff;}
+  .btn.ghost{background:#fff; color:var(--ink); border:1.5px solid #e9dcc4;}
+  .btn.full{width:100%; justify-content:center;}
+  .btn.yellowbtn{background:var(--yellow); color:#5c4a1c;}
+
+  /* ---------- edit panel ---------- */
+  .theme-row{display:flex; align-items:center; gap:8px; margin-bottom:20px;}
+  .theme-scroll{display:flex; gap:10px; overflow-x:auto; padding:4px 2px; flex:1; scrollbar-width:thin;}
+  .theme-thumb{
+    flex:none; width:58px; height:80px; border-radius:8px; cursor:pointer; border:3px solid transparent;
+    background-size:cover; position:relative; overflow:hidden;
+  }
+  .theme-thumb.active{border-color:var(--blue);}
+  .arrow-btn{
+    width:30px; height:30px; border-radius:50%; border:none; background:#fff; box-shadow:var(--shadow);
+    cursor:pointer; flex:none; font-size:14px;
+  }
+  .tool-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(58px,1fr)); gap:8px; margin-bottom:22px;}
+  .tool-btn{
+    background:var(--cream-deep); border:none; border-radius:14px; padding:12px 4px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
+  }
+  .tool-btn.active{background:var(--blue-soft); outline:2px solid var(--blue);}
+  .tool-btn .emoji{font-size:19px;}
+  .tool-panel{
+    background:var(--cream-deep); border-radius:14px; padding:14px; margin-bottom:18px; display:none;
+  }
+  .tool-panel.show{display:block;}
+  .swatches{display:flex; gap:8px; flex-wrap:wrap;}
+  .swatch{width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid #fff; box-shadow:0 0 0 1.5px #ccc;}
+  .swatch.active{box-shadow:0 0 0 2px var(--ink);}
+  .sticker-pick{font-size:20px; cursor:pointer; padding:4px 8px; border-radius:8px; background:#fff;}
+  .sticker-pick:hover{background:var(--blue-soft);}
+  input[type=text]{
+    width:100%; padding:9px 12px; border-radius:10px; border:1.5px solid #e2d6bd; font-family:inherit; font-size:14px;
+  }
+
+  /* ---------- text style preview + presets (mirip contoh screenshot) ---------- */
+  .text-style-preview{
+    background:#1c1c1c; border-radius:16px; padding:30px 16px; margin-bottom:14px;
+    display:flex; align-items:center; justify-content:center; min-height:64px;
+    transition:background .18s ease;
+  }
+  .text-style-preview span{
+    color:#fff; text-align:center; word-break:break-word; line-height:1.25;
+    max-width:100%; transition:all .15s ease;
+  }
+  .text-style-preview span.placeholder{opacity:.4; font-style:normal; font-family:'Quicksand',sans-serif; font-weight:500;}
+  .style-chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px;}
+  .style-chip{
+    border:none; cursor:pointer; padding:9px 16px; border-radius:18px; font-weight:700; font-size:12.5px;
+    background:#fff; color:var(--ink); box-shadow:0 2px 6px rgba(150,120,80,.12); border:1.5px solid #ecdfc6;
+  }
+  .style-chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  .tool-panel .sub-toggle{display:flex; gap:8px; margin-bottom:10px;}
+  .sub-toggle button{
+    flex:1; border:none; border-radius:10px; padding:8px 6px; font-size:12px; font-weight:700; cursor:pointer;
+    background:#fff; color:var(--ink-soft); border:1.5px solid #ecdfc6;
+  }
+  .sub-toggle button.active{background:var(--blue-soft); color:var(--ink); border-color:var(--blue);}
+
+  .preview-wrap{background:var(--cream-deep); border-radius:16px; padding:16px; position:relative;}
+  .preview-canvas-box{position:relative; display:flex; justify-content:center;}
+  #editCanvas{max-width:100%; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.15);}
+  .sticker-overlay{position:absolute; inset:0; pointer-events:none;}
+  .sticker-item, .text-item{position:absolute; pointer-events:auto; cursor:grab; transform:translate(-50%,-50%); user-select:none;}
+  .text-item{white-space:nowrap; text-align:center;}
+  .text-item.no-bg{text-shadow:2px 2px 0 rgba(255,255,255,.7);}
+  .text-item.has-bg{padding:5px 12px; border-radius:6px; text-shadow:none;}
+  .text-item.outline-style{-webkit-text-stroke:2px #000; text-shadow:none; paint-order:stroke fill;}
+  .sticker-item.selected, .text-item.selected{outline:2px dashed var(--blue); outline-offset:3px; border-radius:8px;}
+
+  /* ---------- admin panel ---------- */
+  .admin-box{max-width:560px;}
+  .admin-tabs{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .admin-tab{
+    border:none; cursor:pointer; padding:9px 18px; border-radius:14px; font-weight:700; font-size:13.5px;
+    background:var(--cream-deep); color:var(--ink);
+  }
+  .admin-tab.active{background:var(--ink); color:#fff;}
+  .admin-panel{display:none;}
+  .admin-panel.show{display:block;}
+  .admin-add-row{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;}
+  .admin-add-row input[type=text], .admin-add-row select{flex:1; min-width:100px;}
+  .admin-add-row select{padding:9px 10px; border-radius:10px; border:1.5px solid #e2d6bd; font-family:inherit; font-size:13.5px; background:#fff;}
+  .admin-color-label{
+    display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--ink-soft);
+    background:#fff; padding:6px 10px; border-radius:10px; border:1.5px solid #ecdfc6;
+  }
+  .admin-color-label input[type=color]{width:34px; height:28px; padding:0; border:none; background:none; cursor:pointer;}
+  .admin-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 12px;
+    background:#f7f2e8; border-radius:10px; margin-bottom:6px; font-size:13.5px; font-weight:600;
+  }
+  .admin-item .del{
+    border:none; background:#fde3ec; color:#c0486a; width:26px; height:26px; border-radius:8px; cursor:pointer; font-size:13px; flex:none;
+  }
+  .admin-item .del:hover{background:#f6a9c3; color:#fff;}
+  .admin-item .mini-swatch{width:18px; height:18px; border-radius:5px; display:inline-block; margin-right:5px; vertical-align:middle; box-shadow:0 0 0 1px #ccc;}
+
+  /* ---------- cetak panel ---------- */
+  .cetak-body{display:flex; gap:18px;}
+  .cetak-preview{flex:1; display:flex; justify-content:center;}
+  #printCanvas{max-width:100%; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.15);}
+  .size-options{flex:none; width:180px; display:flex; flex-direction:column; gap:10px;}
+  .size-btn{
+    display:flex; align-items:center; gap:10px; background:#fff; border:1.5px solid #ecdfc6; border-radius:14px;
+    padding:12px 14px; cursor:pointer; font-weight:700; font-size:14px;
+  }
+  .size-btn.active{background:var(--yellow-soft); border-color:var(--yellow);}
+  .size-btn .bars{font-size:16px;}
+  .divider{border:none; border-top:1.5px dashed var(--line); margin:16px 0;}
+
+  /* empty note */
+  .hint{font-size:12.5px; color:var(--ink-soft); margin-top:8px; line-height:1.5;}
+
+  /* footer */
+  .trust-bar{
+    max-width:1400px; margin:34px auto 0; padding:24px 40px; background:repeating-linear-gradient(45deg,#dbe9f7,#dbe9f7 10px,#eaf2fa 10px,#eaf2fa 20px);
+    border-radius:20px; display:flex; justify-content:space-around; flex-wrap:wrap; gap:18px;
+  }
+  .trust-item{display:flex; align-items:center; gap:10px; background:#fffdf9; padding:10px 16px; border-radius:14px; box-shadow:var(--shadow);}
+  .trust-item .ic{width:36px; height:36px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:17px; border:1.5px solid #eee;}
+  .trust-item b{display:block; font-size:13.5px;}
+  .trust-item span{font-size:11.5px; color:var(--ink-soft);}
+  .tagline{text-align:center; font-family:'Caveat', cursive; font-size:26px; color:var(--pink); margin-top:22px;}
+
+  /* modal galeri */
+  .modal-bg{position:fixed; inset:0; background:rgba(60,50,40,.4); display:none; align-items:center; justify-content:center; z-index:50;}
+  .modal-bg.show{display:flex;}
+  .modal-box{background:#fff; border-radius:20px; padding:24px; max-width:480px; width:90%; max-height:80vh; overflow:auto;}
+  .modal-box h3{margin-bottom:14px;}
+  .gallery-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .gallery-grid img{width:100%; border-radius:8px; cursor:pointer; border:2px solid #eee;}
+  .close-modal{float:right; border:none; background:none; font-size:20px; cursor:pointer;}
+  .empty-gallery{color:var(--ink-soft); font-size:13.5px;}
+
+  @media print{
+    body *{visibility:hidden;}
+    #printCanvas, #printCanvas *{visibility:visible;}
+    #printCanvas{position:fixed; top:0; left:50%; transform:translateX(-50%); box-shadow:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <span>✨</span><span class="blue">Foto</span><span class="pink">Booth</span><span>📷</span>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn camera active" data-tab="camera"><span class="icon">📷</span><span>Camera<small>Ambil Foto</small></span></button>
+    <button class="tab-btn edit" data-tab="edit"><span class="icon">🪄</span><span>Edit<small>Percantik Foto</small></span></button>
+    <button class="tab-btn cetak" data-tab="cetak"><span class="icon">🖨️</span><span>Cetak<small>Print &amp; Bagikan</small></span></button>
+  </div>
+  <div class="header-icons">
+    <button title="Favorit">♡</button>
+    <button title="Akun">👤</button>
+    <button title="Panel Admin" id="btnAdmin">⚙️</button>
+  </div>
+</div>
+
+<div class="step-track" id="stepTrack">
+  <span class="step-dot on" data-step="camera"></span>
+  <span class="step-dot" data-step="edit"></span>
+  <span class="step-dot" data-step="cetak"></span>
+</div>
+
+<div class="workspace">
+
+  <!-- ================= CAMERA PANEL ================= -->
+  <section class="panel camera-panel active-panel" id="panel-camera">
+    <div class="tape" style="top:-14px; left:20px; transform:rotate(-8deg);"></div>
+    <span class="sticker" style="top:14px; right:22px;">⭐</span>
+    <div class="ribbon blue">CAMERA</div>
+    <div class="section-label">Hasil Foto 💗</div>
+    <div class="camera-body">
+      <div class="thumbstrip" id="thumbStrip">
+        <div class="thumb-slot"></div>
+        <div class="thumb-slot"></div>
+        <div class="thumb-slot"></div>
+        <div class="thumb-slot"></div>
+      </div>
+      <div class="cam-preview-wrap" id="camPreviewWrap">
+        <video id="camVideo" autoplay muted playsinline></video>
+        <div class="cam-placeholder" id="camPlaceholder">
+          <span class="big-icon">📷</span>
+          <span>Preview Kamera</span>
+        </div>
+        <div class="countdown" id="countdown">3</div>
+        <div class="flash" id="flash"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" id="btnAmbil">📸 Ambil Foto</button>
+      <button class="btn secondary" id="btnUlangi">🔄 Ulangi</button>
+      <button class="btn ghost" id="btnGaleri">🖼️ Galeri</button>
+    </div>
+    <p class="hint" id="camHint">Siap untuk ambil foto! Klik "Ambil Foto" lalu izinkan akses kamera.</p>
+  </section>
+
+  <!-- ================= EDIT PANEL ================= -->
+  <section class="panel edit-panel" id="panel-edit">
+    <span class="sticker" style="top:14px; right:56px;">💗</span>
+    <div class="ribbon pink">EDIT</div>
+    <div class="section-label">Pilih Tema Polaroid 💗</div>
+    <div class="theme-row">
+      <button class="arrow-btn" id="themeLeft">‹</button>
+      <div class="theme-scroll" id="themeScroll"></div>
+      <button class="arrow-btn" id="themeRight">›</button>
+    </div>
+
+    <div class="tool-grid">
+      <button class="tool-btn active" data-tool="tema"><span class="emoji">🎨</span>Tema</button>
+      <button class="tool-btn" data-tool="filter"><span class="emoji">✨</span>Filter</button>
+      <button class="tool-btn" data-tool="stiker"><span class="emoji">😊</span>Stiker</button>
+      <button class="tool-btn" data-tool="teks"><span class="emoji">🅃</span>Teks</button>
+      <button class="tool-btn" data-tool="efek"><span class="emoji">🪄</span>Efek</button>
+      <button class="tool-btn" data-tool="border"><span class="emoji">▢</span>Border</button>
+    </div>
+
+<div class="tool-panel show" id="panel-tema">
+      <p class="hint" style="margin-top:0;">Klik salah satu tema di atas untuk mengganti bingkai polaroid kamu.</p>
+    </div>
+    <div class="tool-panel" id="panel-filter">
+      <div class="swatches" id="filterOptions"></div>
+    </div>
+    <div class="tool-panel" id="panel-stiker">
+      <div class="swatches" id="stickerOptions"></div>
+      <div class="section-label" style="margin-top:12px;">Ukuran Stiker</div>
+      <input type="range" id="stickerSizeRange" min="12" max="80" value="30">
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn ghost" id="btnHapusStiker" style="flex:1; padding:9px; font-size:13px;">🗑️ Hapus Stiker Terpilih</button>
+      </div>
+      <p class="hint">Klik stiker di preview untuk memilih, lalu atur ukurannya. Seret untuk memindah.</p>
+    </div>
+
+    <!-- ====== PANEL TEKS: preview besar + gaya teks (mirip contoh) ====== -->
+    <div class="tool-panel" id="panel-teks">
+      <div class="text-style-preview" id="textStylePreview">
+        <span id="textStylePreviewText" class="placeholder">Ketik teks di sini...</span>
+      </div>
+      <input type="text" id="captionInput" placeholder="Tulis teks di sini...">
+
+      <div class="section-label" style="margin-top:12px;">Gaya Teks</div>
+      <div class="style-chip-row" id="textStyleOptions"></div>
+
+      <div class="section-label" style="margin-top:12px;">Posisi Teks</div>
+      <div class="swatches" id="textPosOptions"></div>
+      <div class="section-label" style="margin-top:12px;">Jenis Font</div>
+      <div class="swatches" id="fontOptions"></div>
+      <div class="section-label" style="margin-top:12px;">Warna Teks</div>
+      <div class="swatches" id="textColorOptions"></div>
+      <div class="section-label" style="margin-top:12px;">Ukuran Teks</div>
+      <input type="range" id="textSizeRange" min="14" max="56" value="26">
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn ghost" id="btnHapusTeks" style="flex:1; padding:9px; font-size:13px;">🗑️ Hapus Teks Terpilih</button>
+      </div>
+      <p class="hint">Pilih gaya teks (Elegant, Meme, dst) lalu ketik di kotak di atas — hasilnya langsung tampil di kotak preview hitam, sama seperti pratinjau di aplikasi edit foto. Seret teks di preview bawah untuk memindah posisi.</p>
+    </div>
+
+    <div class="tool-panel" id="panel-efek">
+      <div class="swatches" id="effectOptions"></div>
+    </div>
+    <div class="tool-panel" id="panel-border">
+      <div class="swatches" id="borderOptions"></div>
+    </div>
+
+    <div class="section-label">Preview Hasil Edit 💗</div>
+    <div class="preview-wrap">
+      <div class="preview-canvas-box">
+        <canvas id="editCanvas" width="360" height="520"></canvas>
+        <div class="sticker-overlay" id="stickerOverlay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CETAK PANEL ================= -->
+  <section class="panel cetak-panel" id="panel-cetak">
+    <span class="sticker" style="top:14px; right:56px;">⭐</span>
+    <div class="ribbon yellow">CETAK</div>
+    <div class="section-label">Preview Cetak 💗</div>
+    <div class="cetak-body">
+      <div class="cetak-preview">
+        <canvas id="printCanvas" width="220" height="500"></canvas>
+      </div>
+      <div class="size-options">
+        <div class="section-label" style="margin-top:0;">Pilih Ukuran</div>
+        <button class="size-btn" data-count="2"><span class="bars">▌▌</span> 2 Foto</button>
+        <button class="size-btn" data-count="3"><span class="bars">▌▌▌</span> 3 Foto</button>
+        <button class="size-btn active" data-count="4"><span class="bars">▌▌▌▌</span> 4 Foto</button>
+        <hr class="divider">
+        <button class="btn primary full" id="btnPrint">🖨️ Print</button>
+        <button class="btn secondary full" id="btnSimpan">⬇️ Simpan</button>
+        <button class="btn ghost full" id="btnBagikan">🔗 Bagikan</button>
+      </div>
+    </div>
+    <p class="hint" id="cetakHint">Ambil dan edit foto dulu di panel sebelah kiri untuk melihat hasil cetak di sini.</p>
+  </section>
+
+</div>
+
+<div class="trust-bar">
+  <div class="trust-item"><div class="ic">🏅</div><div><b>100% Original</b><span>Produk Berkualitas</span></div></div>
+  <div class="trust-item"><div class="ic">🛡️</div><div><b>Aman &amp; Terpercaya</b><span>Pembayaran Aman</span></div></div>
+  <div class="trust-item"><div class="ic">🎧</div><div><b>Customer Support</b><span>Fast Response</span></div></div>
+  <div class="trust-item"><div class="ic">⭐</div><div><b>Banyak Pilihan Tema</b><span>Lucu, Unik &amp; Menarik</span></div></div>
+</div>
+<p class="tagline">✨ Let's create your memories 💕</p>
+
+<!-- Galeri modal -->
+<div class="modal-bg" id="galeriModal">
+  <div class="modal-box">
+    <button class="close-modal" id="closeGaleri">✕</button>
+    <h3>🖼️ Galeri</h3>
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <p class="empty-gallery" id="emptyGalleryMsg">Belum ada foto tersimpan. Ambil foto lalu simpan untuk melihatnya di sini!</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---------------- STATE ----------------
+const state = {
+    photos: [],          // dataURLs of captured photos (up to 4)
+    themeIndex: 0,
+    filter: 'none',
+    effect: 'none',
+    borderColor: '#dbeefc',
+    stickers: [],         // {emoji, xPct, yPct, size}
+    texts: [],            // {text, font, color, size, xPct, yPct, styleId, fontStyle, fontWeight, bg, transform, letterSpacing, outline}
+    selectedSticker: -1,
+    selectedText: -1,
+layout: 'grid',
+    textPos: 'bottom',
+    textFont: "'Quicksand', sans-serif",
+    textColor: '#ffffff',
+    textSize: 26,
+    textStyleId: 'normal',
+    stickerSize: 30,
+    caption: '',
+    printCount: 4,
+    stream: null,
+    gallery: []
+  };
+
+  const PHOTO_W = 300, PHOTO_H = 220, GAP = 10;
+
+  let themes = [
+    {name:'Klasik Biru', style:'polaroid', bg:'#ffffff', frame:'#dbeefc', accent:'#7ab8e8', bottomSpace:70},
+    {name:'Filmstrip Hitam', style:'filmstrip', bg:'#111111', frame:'#111111', accent:'#ffffff', bottomSpace:0},
+    {name:'Airmail', style:'airmail', bg:'#ffffff', frame:'#ffffff', accent:'#e05a5a', bottomSpace:0},
+    {name:'Minimal Krem', style:'minimal', bg:'#fdf8f0', frame:'#fdf8f0', accent:'#e2d3ad', bottomSpace:0},
+    {name:'Dotted Hitam', style:'dotted', bg:'#0d0d0d', frame:'#0d0d0d', accent:'#ffffff', bottomSpace:0}
+  ];
+
+  const filters = [
+    {id:'none', label:'Normal', css:'none', color:'#ffffff'},
+    {id:'bw', label:'B&W', css:'grayscale(1)', color:'#cccccc'},
+    {id:'sepia', label:'Sepia', css:'sepia(.7)', color:'#c8a165'},
+    {id:'vintage', label:'Vintage', css:'contrast(1.05) saturate(.7) sepia(.25)', color:'#d8b98a'},
+    {id:'cool', label:'Cool', css:'saturate(1.2) hue-rotate(20deg) brightness(1.05)', color:'#8fc7e8'},
+    {id:'warm', label:'Warm', css:'saturate(1.3) hue-rotate(-15deg)', color:'#f3b06b'}
+  ];
+
+  let effects = [
+    {id:'none', label:'Tanpa Efek', color:'#ffffff'},
+    {id:'vignette', label:'Vignette', color:'#7a6a55'},
+    {id:'grain', label:'Grain', color:'#b8b0a2'},
+    {id:'glow', label:'Glow', color:'#f6d76a'}
+  ];
+
+  const borderColors = ['#dbeefc','#fde3ec','#fdf0cf','#ffffff','#2b2b2b','#e2d3ad'];
+  let stickerChoices = ['⭐','💕','✨','🌸','🐻','🎀','🌈','☁️','🍒','😊'];
+
+  const fontChoices = [
+    {id:"'Quicksand', sans-serif", label:'Quicksand', color:'#7ab8e8'},
+    {id:"'Fredoka', sans-serif", label:'Fredoka', color:'#f6a9c3'},
+    {id:"'Caveat', cursive", label:'Caveat', color:'#f7cf58'},
+    {id:'serif', label:'Serif', color:'#c8a165'},
+    {id:'sans-serif', label:'Sans', color:'#9aa2ac'},
+    {id:'monospace', label:'Mono', color:'#8a7f72'}
+  ];
+
+  const textPositions = [
+    {id:'top', label:'Atas', color:'#dbeefc'},
+    {id:'center', label:'Tengah', color:'#fde3ec'},
+    {id:'bottom', label:'Bawah', color:'#fdf0cf'}
+  ];
+
+  const textColors = ['#ffffff','#4a4038','#e05a5a','#3a6bd8','#2b8a5e','#f5a623','#f6a9c3','#7ab8e8'];
+
+  // ---------------- TEXT STYLE PRESETS (mirip pilihan "Meme / Elegant / Directional" di contoh) ----------------
+  const textStylePresets = [
+    {id:'normal',      label:'Polos',       fontFamily:"'Quicksand', sans-serif", fontStyle:'normal', fontWeight:'700', bg:null,      color:'#ffffff', transform:'none',      letterSpacing:'0px', outline:false},
+    {id:'elegant',      label:'Elegant',     fontFamily:"'Playfair Display', serif", fontStyle:'italic', fontWeight:'600', bg:'#000000', color:'#ffffff', transform:'none',      letterSpacing:'0px', outline:false},
+    {id:'meme',         label:'Meme',        fontFamily:"'Archivo Black', sans-serif", fontStyle:'normal', fontWeight:'900', bg:null,      color:'#ffffff', transform:'uppercase', letterSpacing:'0px', outline:true},
+    {id:'directional',  label:'Directional', fontFamily:"'Fredoka', sans-serif",   fontStyle:'normal', fontWeight:'700', bg:'#f6a9c3', color:'#ffffff', transform:'uppercase', letterSpacing:'1.5px', outline:false},
+    {id:'lucu',         label:'Lucu',        fontFamily:"'Caveat', cursive",       fontStyle:'normal', fontWeight:'700', bg:null,      color:'#e05a5a', transform:'none',      letterSpacing:'0px', outline:false},
+    {id:'label',        label:'Label',       fontFamily:"'Quicksand', sans-serif", fontStyle:'normal', fontWeight:'700', bg:'#ffffff', color:'#4a4038', transform:'none',      letterSpacing:'0px', outline:false}
+  ];
+  function getPreset(id){ return textStylePresets.find(p=>p.id===id) || textStylePresets[0]; }
+
+  // ---------------- DOM refs ----------------
+  const camVideo = document.getElementById('camVideo');
+  const camPlaceholder = document.getElementById('camPlaceholder');
+  const countdownEl = document.getElementById('countdown');
+  const flashEl = document.getElementById('flash');
+  const thumbSlots = document.querySelectorAll('#thumbStrip .thumb-slot');
+  const btnAmbil = document.getElementById('btnAmbil');
+  const btnUlangi = document.getElementById('btnUlangi');
+  const btnGaleri = document.getElementById('btnGaleri');
+  const camHint = document.getElementById('camHint');
+
+  const editCanvas = document.getElementById('editCanvas');
+  const editCtx = editCanvas.getContext('2d');
+  const printCanvas = document.getElementById('printCanvas');
+  const printCtx = printCanvas.getContext('2d');
+  const stickerOverlay = document.getElementById('stickerOverlay');
+
+  const themeScroll = document.getElementById('themeScroll');
+  const textStylePreview = document.getElementById('textStylePreview');
+  const textStylePreviewText = document.getElementById('textStylePreviewText');
+
+  // ---------------- TAB SWITCHING (satu panel ditampilkan per waktu) ----------------
+  function goToTab(tabName){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabName));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active-panel'));
+    document.querySelectorAll('.step-dot').forEach(d=>d.classList.toggle('on', d.dataset.step===tabName));
+    const target = document.getElementById('panel-'+tabName);
+    if(target) target.classList.add('active-panel');
+    if(tabName !== 'camera' && state.stream){ stopCamera(); }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> goToTab(btn.dataset.tab));
+  });
+
+  // ---------------- BUILD THEME THUMBNAILS ----------------
+  function buildThemeThumbs(){
+    themeScroll.innerHTML = '';
+    themes.forEach((t, i)=>{
+      const d = document.createElement('div');
+      d.className = 'theme-thumb' + (i===state.themeIndex ? ' active' : '');
+      d.style.background = t.bg;
+      d.style.border = '3px solid ' + (i===state.themeIndex ? '#7ab8e8' : 'transparent');
+      d.style.boxShadow = 'inset 0 0 0 2px ' + t.accent;
+      d.title = t.name;
+      d.addEventListener('click', ()=>{ state.themeIndex = i; buildThemeThumbs(); renderAll(); });
+      themeScroll.appendChild(d);
+    });
+  }
+  document.getElementById('themeLeft').addEventListener('click', ()=>{
+    state.themeIndex = (state.themeIndex - 1 + themes.length) % themes.length;
+    buildThemeThumbs(); renderAll();
+  });
+  document.getElementById('themeRight').addEventListener('click', ()=>{
+    state.themeIndex = (state.themeIndex + 1) % themes.length;
+    buildThemeThumbs(); renderAll();
+  });
+
+  // ---------------- TOOL SWITCHING ----------------
+  document.querySelectorAll('.tool-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('show'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tool).classList.add('show');
+    });
+  });
+
+  // ---------------- BUILD OPTION SWATCHES ----------------
+  function buildSwatchRow(container, items, key){
+    container.innerHTML = '';
+    items.forEach(item=>{
+      const s = document.createElement('div');
+      s.className = 'swatch' + (state[key]===item.id ? ' active' : '');
+      s.style.background = item.color;
+      s.title = item.label;
+      s.addEventListener('click', ()=>{
+        state[key] = item.id;
+        buildSwatchRow(container, items, key);
+        renderAll();
+      });
+      container.appendChild(s);
+    });
+  }
+  buildSwatchRow(document.getElementById('filterOptions'), filters, 'filter');
+  buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
+
+  // border swatches (color values directly)
+  const borderContainer = document.getElementById('borderOptions');
+  function buildBorderSwatches(){
+    borderContainer.innerHTML = '';
+    borderColors.forEach(c=>{
+      const s = document.createElement('div');
+      s.className = 'swatch' + (state.borderColor===c ? ' active' : '');
+      s.style.background = c;
+      s.addEventListener('click', ()=>{ state.borderColor = c; buildBorderSwatches(); renderAll(); });
+      borderContainer.appendChild(s);
+    });
+  }
+buildBorderSwatches();
+
+// font swatches
+  const fontContainer = document.getElementById('fontOptions');
+  function buildFontSwatches(){
+    fontContainer.innerHTML = '';
+    fontChoices.forEach(f=>{
+      const s = document.createElement('div');
+      s.className = 'swatch' + (state.textFont===f.id ? ' active' : '');
+      s.style.background = f.color;
+      s.title = f.label;
+      s.addEventListener('click', ()=>{
+        state.textFont = f.id;
+        buildFontSwatches();
+        applyStyleToCurrentText({font: f.id});
+        updateTextStylePreview();
+        renderAll();
+      });
+      fontContainer.appendChild(s);
+    });
+  }
+  buildFontSwatches();
+
+  // text position swatches
+  const textPosContainer = document.getElementById('textPosOptions');
+  function buildTextPosSwatches(){
+    textPosContainer.innerHTML = '';
+    textPositions.forEach(p=>{
+      const s = document.createElement('div');
+      s.className = 'swatch' + (state.textPos===p.id ? ' active' : '');
+      s.style.background = p.color;
+      s.title = p.label;
+      s.addEventListener('click', ()=>{
+        state.textPos = p.id;
+        buildTextPosSwatches();
+        if(state.selectedText >= 0 && state.texts[state.selectedText]){
+          state.texts[state.selectedText].yPct = p.id === 'top' ? 0.12 : (p.id === 'center' ? 0.48 : 0.88);
+        }
+        renderAll();
+      });
+      textPosContainer.appendChild(s);
+    });
+  }
+  buildTextPosSwatches();
+
+  // text color swatches
+  const textColorContainer = document.getElementById('textColorOptions');
+  function buildTextColorSwatches(){
+    textColorContainer.innerHTML = '';
+    textColors.forEach(c=>{
+      const s = document.createElement('div');
+      s.className = 'swatch' + (state.textColor===c ? ' active' : '');
+      s.style.background = c;
+      s.addEventListener('click', ()=>{
+        state.textColor = c;
+        buildTextColorSwatches();
+        applyStyleToCurrentText({color: c});
+        updateTextStylePreview();
+        renderAll();
+      });
+      textColorContainer.appendChild(s);
+    });
+  }
+  buildTextColorSwatches();
+
+  // ---------------- text style preset chips (Elegant / Meme / Directional dst) ----------------
+  const textStyleContainer = document.getElementById('textStyleOptions');
+  function buildTextStyleChips(){
+    textStyleContainer.innerHTML = '';
+    textStylePresets.forEach(preset=>{
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'style-chip' + (state.textStyleId===preset.id ? ' active' : '');
+      chip.textContent = preset.label;
+      chip.addEventListener('click', ()=>{
+        state.textStyleId = preset.id;
+        state.textFont = preset.fontFamily;
+        state.textColor = preset.color;
+        buildTextStyleChips();
+        buildFontSwatches();
+        buildTextColorSwatches();
+        applyStyleToCurrentText({
+          styleId: preset.id, font: preset.fontFamily, fontStyle: preset.fontStyle, fontWeight: preset.fontWeight,
+          bg: preset.bg, color: preset.color, transform: preset.transform, letterSpacing: preset.letterSpacing, outline: preset.outline
+        });
+        updateTextStylePreview();
+        renderAll();
+      });
+      textStyleContainer.appendChild(chip);
+    });
+  }
+  buildTextStyleChips();
+
+  // apply a partial style patch either to the currently selected text object, or to defaults for the next new text
+  function applyStyleToCurrentText(patch){
+    if(state.selectedText >= 0 && state.texts[state.selectedText]){
+      Object.assign(state.texts[state.selectedText], patch);
+    }
+  }
+
+  // update the big black preview box (like the "Hanavd" example) live as you type / change style
+  function updateTextStylePreview(){
+    const preset = getPreset(state.textStyleId);
+    const txt = state.caption || (state.selectedText>=0 && state.texts[state.selectedText] ? state.texts[state.selectedText].text : '');
+    if(!txt){
+      textStylePreviewText.textContent = 'Ketik teks di sini...';
+      textStylePreviewText.className = 'placeholder';
+      textStylePreview.style.background = '#1c1c1c';
+      textStylePreviewText.style.cssText = 'color:#fff;';
+      return;
+    }
+    textStylePreviewText.className = '';
+    textStylePreviewText.textContent = txt;
+    textStylePreview.style.background = preset.bg ? '#1c1c1c' : '#1c1c1c';
+    textStylePreviewText.style.fontFamily = state.textFont || preset.fontFamily;
+    textStylePreviewText.style.fontStyle = preset.fontStyle;
+    textStylePreviewText.style.fontWeight = preset.fontWeight;
+    textStylePreviewText.style.textTransform = preset.transform;
+    textStylePreviewText.style.letterSpacing = preset.letterSpacing;
+    textStylePreviewText.style.fontSize = (state.textSize + 8) + 'px';
+    if(preset.outline){
+      textStylePreviewText.style.webkitTextStroke = '1.5px #000';
+      textStylePreviewText.style.color = state.textColor || preset.color;
+      textStylePreviewText.style.textShadow = 'none';
+      textStylePreviewText.style.background = 'transparent';
+      textStylePreviewText.style.padding = '0';
+    } else if(preset.bg){
+      textStylePreviewText.style.webkitTextStroke = '0';
+      textStylePreviewText.style.color = state.textColor || preset.color;
+      textStylePreviewText.style.textShadow = 'none';
+      textStylePreviewText.style.background = preset.bg;
+      textStylePreviewText.style.padding = '6px 14px';
+      textStylePreviewText.style.borderRadius = '4px';
+      textStylePreviewText.style.display = 'inline-block';
+    } else {
+      textStylePreviewText.style.webkitTextStroke = '0';
+      textStylePreviewText.style.color = state.textColor || preset.color;
+      textStylePreviewText.style.textShadow = '2px 2px 0 rgba(0,0,0,.35)';
+      textStylePreviewText.style.background = 'transparent';
+      textStylePreviewText.style.padding = '0';
+      textStylePreviewText.style.display = 'inline';
+    }
+  }
+
+  // sticker size slider
+  document.getElementById('stickerSizeRange').addEventListener('input', (e)=>{
+    state.stickerSize = Number(e.target.value);
+    if(state.selectedSticker >= 0 && state.stickers[state.selectedSticker]){
+      state.stickers[state.selectedSticker].size = state.stickerSize;
+    }
+    renderAll();
+  });
+
+  // text size slider
+  document.getElementById('textSizeRange').addEventListener('input', (e)=>{
+    state.textSize = Number(e.target.value);
+    applyStyleToCurrentText({size: state.textSize});
+    updateTextStylePreview();
+    renderAll();
+  });
+
+  // delete selected sticker
+  document.getElementById('btnHapusStiker').addEventListener('click', ()=>{
+    if(state.selectedSticker >= 0 && state.stickers[state.selectedSticker]){
+      state.stickers.splice(state.selectedSticker, 1);
+      state.selectedSticker = -1;
+      renderAll();
+    }
+  });
+
+  // delete selected text
+  document.getElementById('btnHapusTeks').addEventListener('click', ()=>{
+    if(state.selectedText >= 0 && state.texts[state.selectedText]){
+      state.texts.splice(state.selectedText, 1);
+      state.selectedText = -1;
+      state.caption = '';
+      document.getElementById('captionInput').value = '';
+      updateTextStylePreview();
+      renderAll();
+    }
+  });
+
+  // sticker picker
+  const stickerContainer = document.getElementById('stickerOptions');
+  stickerChoices.forEach(emoji=>{
+    const s = document.createElement('div');
+    s.className = 'sticker-pick';
+    s.textContent = emoji;
+    s.addEventListener('click', ()=>{
+      state.stickers.push({emoji, xPct: 0.5, yPct: 0.5, size: state.stickerSize});
+      renderAll();
+    });
+    stickerContainer.appendChild(s);
+  });
+
+  // caption input -> adds/updates text object (draggable, positioned freely like stickers)
+  // sekarang juga membawa gaya yang sedang dipilih (font, warna, background, dsb) — sama seperti preview besar di atas
+  document.getElementById('captionInput').addEventListener('input', (e)=>{
+    const t = e.target.value;
+    state.caption = t;
+    const preset = getPreset(state.textStyleId);
+    if(t.trim() === ''){
+      if(state.selectedText >= 0 && state.texts[state.selectedText]){ state.texts.splice(state.selectedText, 1); state.selectedText = -1; }
+      updateTextStylePreview();
+      renderAll();
+      return;
+    }
+    // if there's a currently selected text, update it; otherwise create a new draggable text with current style
+    if(state.selectedText >= 0 && state.texts[state.selectedText]){
+      state.texts[state.selectedText].text = t;
+    } else {
+      state.texts.push({
+        text: t,
+        font: state.textFont,
+        color: state.textColor,
+        size: state.textSize,
+        styleId: preset.id,
+        fontStyle: preset.fontStyle,
+        fontWeight: preset.fontWeight,
+        bg: preset.bg,
+        transform: preset.transform,
+        letterSpacing: preset.letterSpacing,
+        outline: preset.outline,
+        xPct: 0.5,
+        yPct: state.textPos === 'top' ? 0.12 : (state.textPos === 'center' ? 0.48 : 0.88)
+      });
+      state.selectedText = state.texts.length - 1;
+    }
+    updateTextStylePreview();
+    renderAll();
+  });
+
+  // ---------------- CAMERA ----------------
+  async function startCamera(){
+    try{
+      state.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}, audio:false});
+      camVideo.srcObject = state.stream;
+      camVideo.style.display = 'block';
+      camPlaceholder.style.display = 'none';
+      return true;
+    }catch(err){
+      camHint.textContent = 'Tidak bisa mengakses kamera. Pastikan izin kamera diaktifkan di browser kamu.';
+      return false;
+    }
+  }
+
+  function stopCamera(){
+    if(state.stream){
+      state.stream.getTracks().forEach(t=>t.stop());
+      state.stream = null;
+    }
+    camVideo.style.display = 'none';
+    camPlaceholder.style.display = 'flex';
+  }
+
+  function sleep(ms){ return new Promise(res=>setTimeout(res, ms)); }
+
+  async function countdownThen(){
+    countdownEl.style.display = 'flex';
+    for(let n=3; n>=1; n--){
+      countdownEl.textContent = n;
+      await sleep(700);
+    }
+    countdownEl.style.display = 'none';
+  }
+
+  function capturePhoto(){
+    const c = document.createElement('canvas');
+    c.width = PHOTO_W; c.height = PHOTO_H;
+    const ctx = c.getContext('2d');
+    // mirror the capture so it matches the mirrored preview feel
+    ctx.translate(PHOTO_W,0); ctx.scale(-1,1);
+    ctx.drawImage(camVideo, 0, 0, PHOTO_W, PHOTO_H);
+    flashEl.style.transition = 'none';
+    flashEl.style.opacity = '.85';
+    requestAnimationFrame(()=>{
+      flashEl.style.transition = 'opacity .35s ease';
+      flashEl.style.opacity = '0';
+    });
+    return c.toDataURL('image/png');
+  }
+
+  function updateThumbSlots(){
+    thumbSlots.forEach((slot, i)=>{
+      slot.innerHTML = '';
+      if(state.photos[i]){
+        const img = document.createElement('img');
+        img.src = state.photos[i];
+        slot.appendChild(img);
+      }
+    });
+  }
+
+  btnAmbil.addEventListener('click', async ()=>{
+    if(state.photos.length >= 4){ return; }
+    btnAmbil.disabled = true;
+    const ok = state.stream ? true : await startCamera();
+    if(!ok){ btnAmbil.disabled = false; return; }
+    camHint.textContent = 'Bersiap... foto akan diambil otomatis setiap hitungan mundur selesai.';
+    for(let i = state.photos.length; i < 4; i++){
+      await countdownThen();
+      const dataUrl = capturePhoto();
+      state.photos.push(dataUrl);
+      updateThumbSlots();
+      renderAll();
+      await sleep(500);
+    }
+    camHint.textContent = '4 foto berhasil diambil! Lanjut ke tab Edit untuk mempercantik foto kamu.';
+    stopCamera();
+    btnAmbil.disabled = false;
+    setTimeout(()=> goToTab('edit'), 700);
+  });
+
+btnUlangi.addEventListener('click', ()=>{
+    state.photos = [];
+    state.stickers = [];
+    state.texts = [];
+    state.caption = '';
+    state.selectedSticker = -1;
+    state.selectedText = -1;
+    document.getElementById('captionInput').value = '';
+    updateThumbSlots();
+    stopCamera();
+    camHint.textContent = 'Siap untuk ambil foto! Klik "Ambil Foto" lalu izinkan akses kamera.';
+    updateTextStylePreview();
+    renderAll();
+  });
+
+  // ---------------- GALERI ----------------
+  const galeriModal = document.getElementById('galeriModal');
+  const galleryGrid = document.getElementById('galleryGrid');
+  const emptyGalleryMsg = document.getElementById('emptyGalleryMsg');
+
+  function refreshGalleryGrid(){
+    galleryGrid.innerHTML = '';
+    emptyGalleryMsg.style.display = state.gallery.length ? 'none' : 'block';
+    state.gallery.forEach(item=>{
+      const img = document.createElement('img');
+      img.src = item;
+      galleryGrid.appendChild(img);
+    });
+  }
+
+  btnGaleri.addEventListener('click', ()=>{ refreshGalleryGrid(); galeriModal.classList.add('show'); });
+  document.getElementById('closeGaleri').addEventListener('click', ()=> galeriModal.classList.remove('show'));
+  galeriModal.addEventListener('click', (e)=>{ if(e.target === galeriModal) galeriModal.classList.remove('show'); });
+
+  // ---------------- RENDERING (edit + print canvases) ----------------
+  const photoCache = {}; // dataUrl -> HTMLImageElement
+
+  function getImg(dataUrl){
+    return new Promise(resolve=>{
+      if(photoCache[dataUrl]){ resolve(photoCache[dataUrl]); return; }
+      const img = new Image();
+      img.onload = ()=>{ photoCache[dataUrl] = img; resolve(img); };
+      img.src = dataUrl;
+    });
+  }
+
+  function drawSprockets(ctx, borderW, totalW, totalH, color){
+    ctx.fillStyle = color;
+    const holeR = 4, spacing = 22;
+    for(let y = borderW; y < totalH - borderW; y += spacing){
+      ctx.beginPath(); ctx.arc(borderW/2, y, holeR, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(totalW - borderW/2, y, holeR, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  function drawDots(ctx, borderW, totalW, totalH, color){
+    ctx.fillStyle = color;
+    const size = 4, spacing = 12;
+    for(let x = borderW; x < totalW - borderW; x += spacing){
+      ctx.fillRect(x, borderW/2 - size/2, size, size);
+      ctx.fillRect(x, totalH - borderW/2 - size/2, size, size);
+    }
+    for(let y = borderW; y < totalH - borderW; y += spacing){
+      ctx.fillRect(borderW/2 - size/2, y, size, size);
+      ctx.fillRect(totalW - borderW/2 - size/2, y, size, size);
+    }
+  }
+
+  function drawAirmailStripes(ctx, borderW, totalW, totalH){
+    const stripeW = 10;
+    for(let i=0, x=0; x < totalW; i++, x += stripeW){
+      ctx.fillStyle = i % 2 === 0 ? '#e05a5a' : '#3a6bd8';
+      ctx.fillRect(x, 0, stripeW, borderW*0.55);
+      ctx.fillRect(x, totalH - borderW*0.55, stripeW, borderW*0.55);
+    }
+    for(let i=0, y=0; y < totalH; i++, y += stripeW){
+      ctx.fillStyle = i % 2 === 0 ? '#e05a5a' : '#3a6bd8';
+      ctx.fillRect(0, y, borderW*0.55, stripeW);
+      ctx.fillRect(totalW - borderW*0.55, y, borderW*0.55, stripeW);
+    }
+  }
+
+  // ---------- layout computation (setiap foto punya kartu/border sendiri) ----------
+  const BORDER = 16;
+
+function computeLayout(count){
+    const theme = themes[state.themeIndex];
+    const photosToUse = state.photos.slice(0, count);
+    const n = Math.max(photosToUse.length, count);
+    // satu bingkai polaroid utuh (tidak dipisah), foto disusun ke bawah (vertikal)
+    const totalW = PHOTO_W + BORDER*2;
+    const totalH = BORDER*2 + n*PHOTO_H + (n-1)*GAP + theme.bottomSpace;
+    const cards = [];
+    for(let i=0; i<n; i++){
+      cards.push({x: BORDER, y: BORDER + i*(PHOTO_H+GAP)});
+    }
+    return {cards, cols:1, rows:n, totalW, totalH, n, cardW:totalW, cardH:totalH};
+  }
+
+  // hiasan tepi per kartu
+  function drawFilmstripEdges(ctx, x, y, w, h, color){
+    ctx.fillStyle = color;
+    const holeR = 4, spacing = 22;
+    for(let yy = y + BORDER; yy < y + h - BORDER; yy += spacing){
+      ctx.beginPath(); ctx.arc(x + BORDER/2, yy, holeR, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + w - BORDER/2, yy, holeR, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  function drawDottedEdges(ctx, x, y, w, h, color){
+    ctx.fillStyle = color;
+    const size = 4, spacing = 12;
+    for(let xx = x + BORDER; xx < x + w - BORDER; xx += spacing){
+      ctx.fillRect(xx - size/2, y + BORDER/2 - size/2, size, size);
+      ctx.fillRect(xx - size/2, y + h - BORDER/2 - size/2, size, size);
+    }
+    for(let yy = y + BORDER; yy < y + h - BORDER; yy += spacing){
+      ctx.fillRect(x + BORDER/2 - size/2, yy - size/2, size, size);
+      ctx.fillRect(x + w - BORDER/2 - size/2, yy - size/2, size, size);
+    }
+  }
+
+  function drawAirmailEdges(ctx, x, y, w, h){
+    const stripeW = 10;
+    const edge = BORDER*0.55;
+    for(let i=0, xx=x; xx < x+w; i++, xx += stripeW){
+      ctx.fillStyle = i % 2 === 0 ? '#e05a5a' : '#3a6bd8';
+      ctx.fillRect(xx, y, stripeW, edge);
+      ctx.fillRect(xx, y + h - edge, stripeW, edge);
+    }
+    for(let i=0, yy=y; yy < y+h; i++, yy += stripeW){
+      ctx.fillStyle = i % 2 === 0 ? '#e05a5a' : '#3a6bd8';
+      ctx.fillRect(x, yy, edge, stripeW);
+      ctx.fillRect(x + w - edge, yy, edge, stripeW);
+    }
+  }
+
+  function drawCardFrame(ctx, x, y, cardW, cardH, theme){
+    ctx.fillStyle = theme.frame || theme.bg;
+    ctx.fillRect(x, y, cardW, cardH);
+    if(theme.style === 'filmstrip'){ drawFilmstripEdges(ctx, x, y, cardW, cardH, '#ffffff'); }
+    if(theme.style === 'dotted'){ drawDottedEdges(ctx, x, y, cardW, cardH, '#ffffff'); }
+    if(theme.style === 'airmail'){ drawAirmailEdges(ctx, x, y, cardW, cardH); }
+    ctx.strokeStyle = theme.accent;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x+4, y+4, cardW-8, cardH-8);
+  }
+
+  // menggambar teks di canvas mengikuti gaya (styleId) masing-masing: font-style, weight, transform, background chip, outline
+  function drawStyledText(ctx, tx, sx, sy){
+    const size = tx.size || state.textSize;
+    const fontStyle = tx.fontStyle || 'normal';
+    const fontWeight = tx.fontWeight || '600';
+    const fontFamily = tx.font || state.textFont;
+    const displayText = tx.transform === 'uppercase' ? (tx.text||'').toUpperCase() : (tx.text||'');
+    ctx.save();
+    ctx.font = fontStyle + ' ' + fontWeight + ' ' + size + 'px ' + fontFamily;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // letter-spacing manual (canvas tidak punya letter-spacing bawaan di semua browser)
+    const ls = parseFloat(tx.letterSpacing) || 0;
+    let renderText = displayText;
+    let textWidth = ctx.measureText(renderText).width + ls * Math.max(0, renderText.length - 1);
+
+    if(tx.bg){
+      const padX = size*0.42, padY = size*0.3;
+      const boxW = textWidth + padX*2;
+      const boxH = size + padY*2;
+      ctx.fillStyle = tx.bg;
+      const rx = sx - boxW/2, ry = sy - boxH/2, rr = 6;
+      ctx.beginPath();
+      ctx.moveTo(rx+rr, ry);
+      ctx.arcTo(rx+boxW, ry, rx+boxW, ry+boxH, rr);
+      ctx.arcTo(rx+boxW, ry+boxH, rx, ry+boxH, rr);
+      ctx.arcTo(rx, ry+boxH, rx, ry, rr);
+      ctx.arcTo(rx, ry, rx+boxW, ry, rr);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // draw dengan letter-spacing manual (karakter per karakter jika ada spacing)
+    ctx.fillStyle = tx.color || state.textColor;
+    if(ls !== 0 && renderText.length > 1){
+      let startX = sx - textWidth/2;
+      ctx.textAlign = 'left';
+      for(const ch of renderText){
+        const chW = ctx.measureText(ch).width;
+        if(tx.outline){
+          ctx.lineWidth = Math.max(2, size/10);
+          ctx.strokeStyle = '#000000';
+          ctx.strokeText(ch, startX, sy);
+        } else if(!tx.bg){
+          ctx.lineWidth = Math.max(3, size/8);
+          ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+        }
+        ctx.fillText(ch, startX, sy);
+        startX += chW + ls;
+      }
+      ctx.textAlign = 'center';
+    } else {
+      if(tx.outline){
+        ctx.lineWidth = Math.max(2, size/10);
+        ctx.strokeStyle = '#000000';
+        ctx.strokeText(renderText, sx, sy);
+      } else if(!tx.bg){
+        ctx.lineWidth = Math.max(3, size/8);
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.strokeText(renderText, sx, sy);
+      }
+      ctx.fillText(renderText, sx, sy);
+    }
+    ctx.restore();
+  }
+
+  async function drawStrip(ctx, canvasEl, count, forPrint){
+    const theme = themes[state.themeIndex];
+    const photosToUse = state.photos.slice(0, count);
+    const {cards, totalW, totalH, n} = computeLayout(count);
+
+    canvasEl.width = totalW;
+    canvasEl.height = totalH;
+    ctx.clearRect(0,0,totalW, totalH);
+
+// background
+    ctx.fillStyle = '#f4ece0';
+    ctx.fillRect(0,0,totalW,totalH);
+
+    // satu bingkai polaroid utuh (tidak dipisah-pisah)
+    ctx.fillStyle = theme.frame || theme.bg;
+    ctx.fillRect(0,0,totalW,totalH);
+    if(theme.style === 'filmstrip'){ drawFilmstripEdges(ctx, 0, 0, totalW, totalH, '#ffffff'); }
+    if(theme.style === 'dotted'){ drawDottedEdges(ctx, 0, 0, totalW, totalH, '#ffffff'); }
+    if(theme.style === 'airmail'){ drawAirmailEdges(ctx, 0, 0, totalW, totalH); }
+    ctx.strokeStyle = theme.accent;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(4,4,totalW-8,totalH-8);
+
+    // draw each photo — foto disusun ke bawah (vertikal) di dalam satu bingkai
+    for(let i=0; i<n; i++){
+      const card = cards[i];
+      const px = card.x;
+      const py = card.y;
+
+      if(photosToUse[i]){
+        const img = await getImg(photosToUse[i]);
+        const filterDef = filters.find(f=>f.id===state.filter) || filters[0];
+        ctx.save();
+        ctx.filter = filterDef.css;
+        ctx.drawImage(img, px, py, PHOTO_W, PHOTO_H);
+        ctx.restore();
+
+        if(state.effect === 'vignette'){
+          const grad = ctx.createRadialGradient(px+PHOTO_W/2, py+PHOTO_H/2, PHOTO_H*0.2, px+PHOTO_W/2, py+PHOTO_H/2, PHOTO_H*0.75);
+          grad.addColorStop(0,'rgba(0,0,0,0)');
+          grad.addColorStop(1,'rgba(0,0,0,0.35)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
+        } else if(state.effect === 'grain'){
+          ctx.save();
+          ctx.globalAlpha = 0.06;
+          for(let g=0; g<250; g++){
+            ctx.fillStyle = Math.random()>0.5 ? '#fff' : '#000';
+            ctx.fillRect(px+Math.random()*PHOTO_W, py+Math.random()*PHOTO_H, 1.5, 1.5);
+          }
+          ctx.restore();
+        } else if(state.effect === 'glow'){
+          ctx.save();
+          ctx.globalAlpha = 0.18;
+          ctx.fillStyle = '#fff6d0';
+          ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
+          ctx.restore();
+        }
+      } else {
+        ctx.fillStyle = '#dfe4e8';
+        ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
+        ctx.fillStyle = '#a9b1b9';
+        ctx.font = '16px Quicksand';
+        ctx.textAlign = 'center';
+ctx.fillText('Belum ada foto', px+PHOTO_W/2, py+PHOTO_H/2);
+}
+    }
+
+    // caption di ruang bawah bingkai polaroid (hanya untuk tema yang punya bottomSpace)
+    if(theme.bottomSpace > 0){
+      ctx.fillStyle = '#4a4038';
+      ctx.font = "26px 'Caveat', cursive";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(state.caption || 'my memories', totalW/2, totalH - theme.bottomSpace/2);
+    }
+
+    // ---- teks (dapat diletakkan bebas di dalam foto seperti stiker, mengikuti gaya terpilih) ----
+    state.texts.forEach((tx)=>{
+      if(!tx.text) return;
+      const sx = tx.xPct * totalW;
+      const sy = tx.yPct * totalH;
+      drawStyledText(ctx, tx, sx, sy);
+    });
+
+    // ---- stiker ----
+    state.stickers.forEach((st)=>{
+      const sx = st.xPct * totalW;
+      const sy = st.yPct * totalH;
+      ctx.font = (st.size || state.stickerSize) + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(st.emoji, sx, sy);
+    });
+
+    // ---- DOM overlay untuk preview edit (bisa diklik, dipilih, digeser) ----
+    if(!forPrint){
+      stickerOverlay.innerHTML = '';
+      state.texts.forEach((tx, idx)=>{
+        const el = document.createElement('div');
+        const hasBg = !!tx.bg;
+        const isOutline = !!tx.outline;
+        el.className = 'text-item' + (hasBg ? ' has-bg' : (isOutline ? ' outline-style' : ' no-bg')) + (state.selectedText === idx ? ' selected' : '');
+        el.textContent = tx.transform === 'uppercase' ? (tx.text||'').toUpperCase() : tx.text;
+        el.style.left = (tx.xPct*100) + '%';
+        el.style.top = (tx.yPct*100) + '%';
+        el.style.fontFamily = tx.font || state.textFont;
+        el.style.fontStyle = tx.fontStyle || 'normal';
+        el.style.fontWeight = tx.fontWeight || '600';
+        el.style.letterSpacing = tx.letterSpacing || '0px';
+        el.style.fontSize = (tx.size || state.textSize) + 'px';
+        el.style.color = tx.color || state.textColor;
+        if(hasBg) el.style.background = tx.bg;
+        el.dataset.type = 'text';
+        el.dataset.idx = idx;
+        attachDrag(el, 'text', idx, canvasEl);
+        stickerOverlay.appendChild(el);
+      });
+      state.stickers.forEach((st, idx)=>{
+        const el = document.createElement('div');
+        el.className = 'sticker-item' + (state.selectedSticker === idx ? ' selected' : '');
+        el.textContent = st.emoji;
+        el.style.left = (st.xPct*100) + '%';
+        el.style.top = (st.yPct*100) + '%';
+        el.style.fontSize = (st.size || state.stickerSize) + 'px';
+        el.dataset.type = 'sticker';
+        el.dataset.idx = idx;
+        attachDrag(el, 'sticker', idx, canvasEl);
+        stickerOverlay.appendChild(el);
+      });
+    }
+
+    return {totalW, totalH};
+  }
+
+  function attachDrag(el, type, idx, canvasEl){
+    let dragging = false;
+    el.addEventListener('pointerdown', (e)=>{
+      dragging = true;
+      el.setPointerCapture(e.pointerId);
+      if(type === 'sticker'){
+        state.selectedSticker = idx;
+        state.selectedText = -1;
+      } else {
+        state.selectedText = idx;
+        state.selectedSticker = -1;
+        const tObj = state.texts[idx];
+        if(tObj){
+          state.caption = tObj.text;
+          state.textFont = tObj.font || state.textFont;
+          state.textColor = tObj.color || state.textColor;
+          state.textSize = tObj.size || state.textSize;
+          state.textStyleId = tObj.styleId || state.textStyleId;
+          document.getElementById('captionInput').value = tObj.text;
+          buildTextStyleChips();
+          buildFontSwatches();
+          buildTextColorSwatches();
+          updateTextStylePreview();
+        }
+      }
+      document.querySelectorAll('.sticker-item.selected, .text-item.selected').forEach(other=>other.classList.remove('selected'));
+      el.classList.add('selected');
+      const rangeId = type === 'sticker' ? 'stickerSizeRange' : 'textSizeRange';
+      const range = document.getElementById(rangeId);
+      if(range){
+        const obj = type === 'sticker' ? state.stickers[idx] : state.texts[idx];
+        range.value = (obj && obj.size) ? obj.size : (type === 'sticker' ? state.stickerSize : state.textSize);
+      }
+    });
+    el.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      const rect = canvasEl.getBoundingClientRect();
+      let xPct = (e.clientX - rect.left) / rect.width;
+      let yPct = (e.clientY - rect.top) / rect.height;
+      xPct = Math.min(1, Math.max(0, xPct));
+      yPct = Math.min(1, Math.max(0, yPct));
+      if(type === 'sticker'){
+        state.stickers[idx].xPct = xPct;
+        state.stickers[idx].yPct = yPct;
+      } else {
+        state.texts[idx].xPct = xPct;
+        state.texts[idx].yPct = yPct;
+      }
+      el.style.left = (xPct*100) + '%';
+      el.style.top = (yPct*100) + '%';
+      renderEditPreview(true); // perbarui canvas tanpa membangun ulang overlay
+    });
+    el.addEventListener('pointerup', ()=>{ dragging = false; renderAll(); });
+  }
+
+  async function renderEditPreview(skipOverlayRebuild){
+    if(skipOverlayRebuild){
+      await drawStripSilent(editCtx, editCanvas, 4);
+    } else {
+      await drawStrip(editCtx, editCanvas, 4, false);
+    }
+  }
+
+async function drawStripSilent(ctx, canvasEl, count){
+    // like drawStrip but never touches the DOM overlay (used during drag for smooth updates)
+    const {totalW, totalH} = computeLayout(count);
+    ctx.clearRect(0,0,totalW,totalH);
+    await drawStrip(ctx, canvasEl, count, true);
+  }
+
+  async function renderPrintPreview(){
+    document.querySelectorAll('.size-btn').forEach(b=> b.classList.toggle('active', Number(b.dataset.count)===state.printCount));
+    await drawStrip(printCtx, printCanvas, state.printCount, true);
+    const cetakHint = document.getElementById('cetakHint');
+    cetakHint.textContent = state.photos.length ? 'Preview siap! Kamu bisa print, simpan, atau bagikan hasil foto booth kamu.' : 'Ambil dan edit foto dulu di panel sebelah kiri untuk melihat hasil cetak di sini.';
+  }
+
+  async function renderAll(){
+    await drawStrip(editCtx, editCanvas, 4, false);
+    await renderPrintPreview();
+  }
+
+  // size buttons
+  document.querySelectorAll('.size-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.printCount = Number(btn.dataset.count);
+      renderPrintPreview();
+    });
+  });
+
+  // ---------------- PRINT / SAVE / SHARE ----------------
+  document.getElementById('btnPrint').addEventListener('click', ()=>{
+    window.print();
+  });
+
+  document.getElementById('btnSimpan').addEventListener('click', ()=>{
+    const dataUrl = printCanvas.toDataURL('image/png');
+    state.gallery.push(dataUrl);
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'foto-booth-' + Date.now() + '.png';
+    a.click();
+  });
+
+  document.getElementById('btnBagikan').addEventListener('click', async ()=>{
+    printCanvas.toBlob(async (blob)=>{
+      if(!blob) return;
+      const file = new File([blob], 'foto-booth.png', {type:'image/png'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file], title:'Foto Booth', text:'Lihat hasil foto booth aku! 💕'}); }
+        catch(e){ /* user cancelled */ }
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'foto-booth.png';
+        a.click();
+        alert('Perangkat ini belum mendukung fitur bagikan langsung, jadi foto sudah diunduh — kamu bisa membagikannya secara manual 💕');
+      }
+    }, 'image/png');
+  });
+
+  // ---------------- INIT ----------------
+  buildThemeThumbs();
+  updateThumbSlots();
+  updateTextStylePreview();
+  renderAll();
+})();
+</script>
+</body>
+</html>
