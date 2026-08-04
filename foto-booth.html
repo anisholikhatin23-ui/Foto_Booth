@@ -27,31 +27,11 @@
     margin:0;
     font-family:'Quicksand', sans-serif;
     color:var(--ink);
-    background-color: var(--cream);
+    background:
+      radial-gradient(circle at 10% 10%, #fffdf7 0, transparent 40%),
+      var(--cream);
     min-height:100vh;
     padding-bottom:40px;
-    transition: background 0.4s ease;
-  }
-  body.tab-camera {
-    background-color: #f0f7fd;
-    background-image: 
-      linear-gradient(rgba(122, 184, 232, 0.08) 1.5px, transparent 1.5px),
-      linear-gradient(90deg, rgba(122, 184, 232, 0.08) 1.5px, transparent 1.5px);
-    background-size: 20px 20px;
-  }
-  body.tab-edit {
-    background-color: #fff0f5;
-    background-image: 
-      linear-gradient(rgba(246, 169, 195, 0.08) 1.5px, transparent 1.5px),
-      linear-gradient(90deg, rgba(246, 169, 195, 0.08) 1.5px, transparent 1.5px);
-    background-size: 20px 20px;
-  }
-  body.tab-cetak {
-    background-color: #fdfaf0;
-    background-image: 
-      linear-gradient(rgba(247, 207, 88, 0.08) 1.5px, transparent 1.5px),
-      linear-gradient(90deg, rgba(247, 207, 88, 0.08) 1.5px, transparent 1.5px);
-    background-size: 20px 20px;
   }
   a,button{font-family:inherit;}
   h1,h2,h3{font-family:'Fredoka', sans-serif; margin:0;}
@@ -101,7 +81,7 @@
 
   /* ---------- workspace ---------- */
   .workspace{
-    max-width:820px; margin:14px auto 0; padding:0 32px;
+    max-width:1180px; margin:14px auto 0; padding:0 32px;
   }
   .panel{
     position:relative; background:var(--paper); border-radius:26px; padding:26px;
@@ -118,7 +98,7 @@
   }
   .step-track{
     display:flex; align-items:center; justify-content:center; gap:8px;
-    max-width:820px; margin:0 auto 18px; padding:0 32px;
+    max-width:1180px; margin:0 auto 18px; padding:0 32px;
   }
   .step-track .step-dot{
     width:8px; height:8px; border-radius:50%; background:var(--line);
@@ -142,57 +122,25 @@
   .thumb-slot{
     width:76px; height:76px; border-radius:10px; background:#1c1c1c; border:3px solid var(--blue-soft);
     display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;
-    cursor:pointer; transition:all 0.2s ease;
+    cursor:pointer; transition:border-color .15s ease, transform .15s ease;
   }
-  .thumb-slot.active {
-    border-color: var(--blue);
-    box-shadow: 0 0 12px rgba(122, 184, 232, 0.6);
-    transform: scale(1.05);
-  }
-  .thumb-slot.active::after {
-    content: '⭐';
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    font-size: 16px;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-    z-index: 5;
-  }
+  .thumb-slot:hover{transform:translateY(-1px);}
   .thumb-slot img{width:100%; height:100%; object-fit:cover;}
-  .slot-badge {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    font-size: 10px;
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-weight: bold;
-    pointer-events: none;
-    z-index: 4;
+  .thumb-slot.active-slot{border-color:var(--pink); box-shadow:0 0 0 3px var(--pink-soft);}
+  .thumb-slot .slot-num{
+    position:absolute; top:3px; left:4px; font-size:10px; font-weight:800; color:#fff;
+    background:rgba(0,0,0,.35); border-radius:6px; padding:1px 5px; pointer-events:none;
   }
-  .slot-clear {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: #ff5b5b;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    z-index: 4;
+  .thumb-slot .active-badge{
+    position:absolute; bottom:3px; left:4px; right:4px; font-size:8.5px; font-weight:800; color:#5c4a1c;
+    background:var(--yellow); border-radius:6px; padding:1px 0; text-align:center; letter-spacing:.3px;
   }
-  .thumb-slot:hover .slot-clear {
-    display: flex;
+  .thumb-slot .slot-del{
+    position:absolute; top:3px; right:3px; width:18px; height:18px; border-radius:50%; border:none;
+    background:rgba(0,0,0,.55); color:#fff; font-size:11px; line-height:1; cursor:pointer; display:none;
+    align-items:center; justify-content:center;
   }
+  .thumb-slot:hover .slot-del{display:flex;}
   .cam-preview-wrap{
     flex:1; position:relative; border-radius:18px; background:#eef1f4; min-height:340px;
     display:flex; align-items:center; justify-content:center; overflow:hidden; border:3px solid #eee;
@@ -219,7 +167,11 @@
   .btn.full{width:100%; justify-content:center;}
   .btn.yellowbtn{background:var(--yellow); color:#5c4a1c;}
 
-  /* ---------- edit panel ---------- */
+  /* ---------- edit panel (2 kolom: kiri = tools, kanan = preview) ---------- */
+  .edit-body{display:flex; gap:22px; align-items:flex-start;}
+  .edit-tools-col{flex:1 1 0; min-width:0;}
+  .edit-preview-col{flex:none; width:300px; position:sticky; top:16px;}
+
   .theme-row{display:flex; align-items:center; gap:8px; margin-bottom:20px;}
   .theme-scroll{display:flex; gap:10px; overflow-x:auto; padding:4px 2px; flex:1; scrollbar-width:thin;}
   .theme-thumb{
@@ -315,17 +267,35 @@
   .admin-item .del:hover{background:#f6a9c3; color:#fff;}
   .admin-item .mini-swatch{width:18px; height:18px; border-radius:5px; display:inline-block; margin-right:5px; vertical-align:middle; box-shadow:0 0 0 1px #ccc;}
 
-  /* ---------- cetak panel ---------- */
-  .cetak-body{display:flex; gap:18px;}
-  .cetak-preview{flex:1; display:flex; justify-content:center;}
-  #printCanvas{max-width:100%; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.15);}
-  .size-options{flex:none; width:180px; display:flex; flex-direction:column; gap:10px;}
-  .size-btn{
-    display:flex; align-items:center; gap:10px; background:#fff; border:1.5px solid #ecdfc6; border-radius:14px;
-    padding:12px 14px; cursor:pointer; font-weight:700; font-size:14px;
+  /* ---------- cetak panel (redesign ala Image 3) ---------- */
+  .cetak-body{display:flex; gap:22px; align-items:flex-start;}
+  .cetak-preview{
+    flex:1; display:flex; justify-content:center; align-items:flex-start;
+    background:var(--cream-deep); border-radius:18px; padding:20px; min-height:360px;
   }
+  #printCanvas{max-width:100%; border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.15);}
+  .cetak-side{flex:none; width:260px; display:flex; flex-direction:column; gap:4px;}
+  .cetak-group-label{font-weight:700; font-size:13.5px; margin:2px 0 10px; display:flex; align-items:center; gap:6px;}
+  .layout-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:18px;}
+  .layout-btn{
+    display:flex; flex-direction:column; align-items:center; gap:6px; background:#fff; border:1.5px solid #ecdfc6;
+    border-radius:14px; padding:10px 4px 8px; cursor:pointer; font-weight:700; font-size:10.5px; color:var(--ink);
+  }
+  .layout-btn.active{background:var(--yellow-soft); border-color:var(--yellow);}
+  .layout-btn .bars{display:flex; gap:2px; align-items:center; justify-content:center; height:26px;}
+  .layout-btn .bars i{display:block; width:5px; background:var(--ink-soft); border-radius:1px;}
+  .layout-btn.active .bars i{background:#c9a13a;}
+  .layout-btn[data-layout="2"] .bars i{height:11px;}
+  .layout-btn[data-layout="3"] .bars i{height:9px;}
+  .layout-btn[data-layout="4"] .bars i{height:8px;}
+  .layout-btn[data-layout="strip"] .bars i{height:24px; width:4px;}
+  .size-grid{display:flex; flex-direction:column; gap:8px; margin-bottom:6px;}
+  .size-btn{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; background:#fff; border:1.5px solid #ecdfc6; border-radius:14px;
+    padding:11px 14px; cursor:pointer; font-weight:700; font-size:13.5px; color:var(--ink);
+  }
+  .size-btn span.dim{font-weight:600; font-size:11.5px; color:var(--ink-soft);}
   .size-btn.active{background:var(--yellow-soft); border-color:var(--yellow);}
-  .size-btn .bars{font-size:16px;}
   .divider{border:none; border-top:1.5px dashed var(--line); margin:16px 0;}
 
   /* empty note */
@@ -348,9 +318,21 @@
   .modal-box{background:#fff; border-radius:20px; padding:24px; max-width:480px; width:90%; max-height:80vh; overflow:auto;}
   .modal-box h3{margin-bottom:14px;}
   .gallery-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
-  .gallery-grid img{width:100%; border-radius:8px; cursor:pointer; border:2px solid #eee;}
+  .gallery-item{position:relative; border-radius:8px; overflow:hidden;}
+  .gallery-item img{width:100%; display:block; border-radius:8px; border:2px solid #eee;}
+  .gallery-item .gallery-del{
+    position:absolute; top:5px; right:5px; width:24px; height:24px; border-radius:50%; border:none;
+    background:rgba(0,0,0,.55); color:#fff; font-size:13px; line-height:1; cursor:pointer; display:flex;
+    align-items:center; justify-content:center;
+  }
+  .gallery-item .gallery-del:hover{background:#c0486a;}
   .close-modal{float:right; border:none; background:none; font-size:20px; cursor:pointer;}
   .empty-gallery{color:var(--ink-soft); font-size:13.5px;}
+
+  @media (max-width: 860px){
+    .edit-body, .cetak-body{flex-direction:column;}
+    .edit-preview-col, .cetak-side{width:100%; position:static;}
+  }
 
   @media print{
     body *{visibility:hidden;}
@@ -390,25 +372,13 @@
     <div class="tape" style="top:-14px; left:20px; transform:rotate(-8deg);"></div>
     <span class="sticker" style="top:14px; right:22px;">⭐</span>
     <div class="ribbon blue">CAMERA</div>
-    <div class="section-label">Hasil Foto 💗 (Pilih slot untuk mengulang)</div>
+    <div class="section-label">Hasil Foto 💗</div>
     <div class="camera-body">
       <div class="thumbstrip" id="thumbStrip">
-        <div class="thumb-slot active" data-idx="0">
-          <span class="slot-badge">1</span>
-          <button class="slot-clear" data-idx="0" title="Hapus foto ini">✕</button>
-        </div>
-        <div class="thumb-slot" data-idx="1">
-          <span class="slot-badge">2</span>
-          <button class="slot-clear" data-idx="1" title="Hapus foto ini">✕</button>
-        </div>
-        <div class="thumb-slot" data-idx="2">
-          <span class="slot-badge">3</span>
-          <button class="slot-clear" data-idx="2" title="Hapus foto ini">✕</button>
-        </div>
-        <div class="thumb-slot" data-idx="3">
-          <span class="slot-badge">4</span>
-          <button class="slot-clear" data-idx="3" title="Hapus foto ini">✕</button>
-        </div>
+        <div class="thumb-slot" data-slot="0"></div>
+        <div class="thumb-slot" data-slot="1"></div>
+        <div class="thumb-slot" data-slot="2"></div>
+        <div class="thumb-slot" data-slot="3"></div>
       </div>
       <div class="cam-preview-wrap" id="camPreviewWrap">
         <video id="camVideo" autoplay muted playsinline></video>
@@ -420,144 +390,132 @@
         <div class="flash" id="flash"></div>
       </div>
     </div>
-    <div class="btn-row" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:20px;">
-      <button class="btn secondary" id="btnUlangi">🔄 Ulangi Slot</button>
-      <button class="btn primary" style="font-size: 16px; padding: 14px 28px; border-radius: 50px;" id="btnAmbil">📸 Ambil Foto</button>
-      <button class="btn yellowbtn" id="btnUploadHD">📁 Upload Foto (HD)</button>
+    <div class="btn-row">
+      <button class="btn primary" id="btnAmbil">📸 Ambil Foto</button>
+      <button class="btn secondary" id="btnUlangi">🔄 Ulangi Slot Ini</button>
+      <button class="btn yellowbtn" id="btnUpload">📁 Upload dari HP (HD)</button>
       <button class="btn ghost" id="btnGaleri">🖼️ Galeri</button>
-      <input type="file" id="fileUploadHD" accept="image/*" multiple style="display: none;">
+      <input type="file" id="uploadInput" accept="image/*" multiple style="display:none;">
     </div>
-    <p class="hint" id="camHint">Siap untuk ambil foto! Klik "Ambil Foto" lalu izinkan akses kamera.</p>
-    
-    <!-- Tips Banner like Mockup -->
-    <div class="tips-banner" style="background:#e8f4fd; border: 1.5px dashed #bcdcfa; border-radius: 16px; padding: 12px 16px; display:flex; align-items:center; gap:12px; margin-top:20px; position:relative; overflow:hidden;">
-      <span style="font-size:26px;">🐻</span>
-      <div style="font-size:13px; font-weight:600; color:#3a6a90;">
-        <strong>Tips:</strong> Pastikan kamera menghadap dengan baik untuk hasil terbaik ✨
-      </div>
-    </div>
-    
-    <!-- Big Navigation Button to Edit Panel -->
-    <button class="btn primary full" style="margin-top:20px; font-size:16px; padding:15px; background:var(--blue); border-radius:18px; justify-content:center;" id="btnNextToEdit">Lanjut ke Edit ➔</button>
+    <p class="hint" id="camHint">Klik slot foto yang ingin diisi/diulang, lalu tekan "Ambil Foto". Hitung mundur 5 detik sebelum foto diambil. Kamu juga bisa unggah foto HD dari galeri HP.</p>
   </section>
 
   <!-- ================= EDIT PANEL ================= -->
   <section class="panel edit-panel" id="panel-edit">
     <span class="sticker" style="top:14px; right:56px;">💗</span>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <button class="arrow-btn" onclick="goToTab('camera')" style="box-shadow: none; border: 1.5px solid #e9dcc4; font-size: 16px; width: 34px; height: 34px;">←</button>
-      <div class="ribbon pink">EDIT</div>
-    </div>
-    <div class="section-label">Pilih Tema Polaroid 💗</div>
-    <div class="theme-row">
-      <button class="arrow-btn" id="themeLeft">‹</button>
-      <div class="theme-scroll" id="themeScroll"></div>
-      <button class="arrow-btn" id="themeRight">›</button>
-    </div>
+    <div class="ribbon pink">EDIT</div>
+    <p class="hint" style="margin-top:-8px; margin-bottom:16px;">Percantik fotomu sesuai gayamu! 💗</p>
 
-    <div class="tool-grid">
-      <button class="tool-btn active" data-tool="tema"><span class="emoji">🎨</span>Tema</button>
-      <button class="tool-btn" data-tool="filter"><span class="emoji">✨</span>Filter</button>
-      <button class="tool-btn" data-tool="stiker"><span class="emoji">😊</span>Stiker</button>
-      <button class="tool-btn" data-tool="teks"><span class="emoji">🅃</span>Teks</button>
-      <button class="tool-btn" data-tool="efek"><span class="emoji">🪄</span>Efek</button>
-    </div>
+    <div class="edit-body">
+      <!-- KIRI: semua tool/pengaturan -->
+      <div class="edit-tools-col">
+        <div class="section-label">Pilih Tema Polaroid 💗</div>
+        <div class="theme-row">
+          <button class="arrow-btn" id="themeLeft">‹</button>
+          <div class="theme-scroll" id="themeScroll"></div>
+          <button class="arrow-btn" id="themeRight">›</button>
+        </div>
 
-    <div class="tool-panel show" id="panel-tema">
-      <p class="hint" style="margin-top:0;">Klik salah satu tema di atas untuk mengganti bingkai polaroid kamu.</p>
-    </div>
-    <div class="tool-panel" id="panel-filter">
-      <div class="swatches" id="filterOptions"></div>
-    </div>
-    <div class="tool-panel" id="panel-stiker">
-      <div class="swatches" id="stickerOptions"></div>
-      <div class="section-label" style="margin-top:12px;">Ukuran Stiker</div>
-      <input type="range" id="stickerSizeRange" min="12" max="80" value="30">
-      <div class="btn-row" style="margin-top:8px;">
-        <button class="btn ghost" id="btnHapusStiker" style="flex:1; padding:9px; font-size:13px;">🗑️ Hapus Stiker Terpilih</button>
+        <div class="tool-grid">
+          <button class="tool-btn active" data-tool="tema"><span class="emoji">🎨</span>Tema</button>
+          <button class="tool-btn" data-tool="filter"><span class="emoji">✨</span>Filter</button>
+          <button class="tool-btn" data-tool="stiker"><span class="emoji">😊</span>Stiker</button>
+          <button class="tool-btn" data-tool="teks"><span class="emoji">🅃</span>Teks</button>
+          <button class="tool-btn" data-tool="efek"><span class="emoji">🪄</span>Efek</button>
+        </div>
+
+        <div class="tool-panel show" id="panel-tema">
+          <p class="hint" style="margin-top:0;">Klik salah satu tema di atas untuk mengganti bingkai polaroid kamu.</p>
+        </div>
+        <div class="tool-panel" id="panel-filter">
+          <div class="swatches" id="filterOptions"></div>
+        </div>
+        <div class="tool-panel" id="panel-stiker">
+          <div class="swatches" id="stickerOptions"></div>
+          <div class="section-label" style="margin-top:12px;">Ukuran Stiker</div>
+          <input type="range" id="stickerSizeRange" min="12" max="80" value="30">
+          <div class="btn-row" style="margin-top:8px;">
+            <button class="btn ghost" id="btnHapusStiker" style="flex:1; padding:9px; font-size:13px;">🗑️ Hapus Stiker Terpilih</button>
+          </div>
+          <p class="hint">Klik stiker di preview untuk memilih, lalu atur ukurannya. Seret untuk memindah.</p>
+        </div>
+
+        <!-- ====== PANEL TEKS: preview besar + gaya teks (mirip contoh) ====== -->
+        <div class="tool-panel" id="panel-teks">
+          <div class="text-style-preview" id="textStylePreview">
+            <span id="textStylePreviewText" class="placeholder">Ketik teks di sini...</span>
+          </div>
+          <input type="text" id="captionInput" placeholder="Tulis teks di sini...">
+
+          <div class="section-label" style="margin-top:12px;">Gaya Teks</div>
+          <div class="style-chip-row" id="textStyleOptions"></div>
+
+          <div class="section-label" style="margin-top:12px;">Posisi Teks</div>
+          <div class="swatches" id="textPosOptions"></div>
+          <div class="section-label" style="margin-top:12px;">Jenis Font</div>
+          <div class="swatches" id="fontOptions"></div>
+          <div class="section-label" style="margin-top:12px;">Warna Teks</div>
+          <div class="swatches" id="textColorOptions"></div>
+          <div class="section-label" style="margin-top:12px;">Ukuran Teks</div>
+          <input type="range" id="textSizeRange" min="14" max="56" value="26">
+          <div class="btn-row" style="margin-top:10px;">
+            <button class="btn ghost" id="btnHapusTeks" style="flex:1; padding:9px; font-size:13px;">🗑️ Hapus Teks Terpilih</button>
+          </div>
+          <p class="hint">Pilih gaya teks (Elegant, Meme, dst) lalu ketik di kotak di atas — hasilnya langsung tampil di kotak preview hitam. Seret teks di preview untuk memindah posisi.</p>
+        </div>
+
+        <div class="tool-panel" id="panel-efek">
+          <div class="swatches" id="effectOptions"></div>
+        </div>
       </div>
-      <p class="hint">Klik stiker di preview untuk memilih, lalu atur ukurannya. Seret untuk memindah.</p>
-    </div>
 
-    <!-- ====== PANEL TEKS: preview besar + gaya teks (mirip contoh) ====== -->
-    <div class="tool-panel" id="panel-teks">
-      <div class="text-style-preview" id="textStylePreview">
-        <span id="textStylePreviewText" class="placeholder">Ketik teks di sini...</span>
+      <!-- KANAN: hasil edit polaroid -->
+      <div class="edit-preview-col">
+        <div class="section-label">Preview Hasil Edit 💗</div>
+        <div class="preview-wrap">
+          <div class="preview-canvas-box">
+            <canvas id="editCanvas" width="360" height="520"></canvas>
+            <div class="sticker-overlay" id="stickerOverlay"></div>
+          </div>
+        </div>
       </div>
-      <input type="text" id="captionInput" placeholder="Tulis teks di sini...">
-
-      <div class="section-label" style="margin-top:12px;">Gaya Teks</div>
-      <div class="style-chip-row" id="textStyleOptions"></div>
-
-      <div class="section-label" style="margin-top:12px;">Posisi Teks</div>
-      <div class="swatches" id="textPosOptions"></div>
-      <div class="section-label" style="margin-top:12px;">Jenis Font</div>
-      <div class="swatches" id="fontOptions"></div>
-      <div class="section-label" style="margin-top:12px;">Warna Teks</div>
-      <div class="swatches" id="textColorOptions"></div>
-      <div class="section-label" style="margin-top:12px;">Ukuran Teks</div>
-      <input type="range" id="textSizeRange" min="14" max="56" value="26">
-      <div class="btn-row" style="margin-top:10px;">
-        <button class="btn ghost" id="btnHapusTeks" style="flex:1; padding:9px; font-size:13px;">🗑️ Hapus Teks Terpilih</button>
-      </div>
-      <p class="hint">Pilih gaya teks (Elegant, Meme, dst) lalu ketik di kotak di atas — hasilnya langsung tampil di kotak preview hitam, sama seperti pratinjau di aplikasi edit foto. Seret teks di preview bawah untuk memindah posisi.</p>
-    </div>
-
-    <div class="tool-panel" id="panel-efek">
-      <div class="swatches" id="effectOptions"></div>
-    </div>
-
-    <div class="section-label">Preview Hasil Edit 💗</div>
-    <div class="preview-wrap">
-      <div class="preview-canvas-box">
-        <canvas id="editCanvas" width="360" height="520"></canvas>
-        <div class="sticker-overlay" id="stickerOverlay"></div>
-      </div>
-    </div>
-    
-    <!-- Action buttons matching mockup -->
-    <div style="display:flex; gap:12px; margin-top:20px;">
-      <button class="btn secondary" style="flex:1; justify-content:center; background:#fddae5; color:#c04a6d;" id="btnEditSimpan">⬇️ Simpan Cepat</button>
-      <button class="btn primary" style="flex:2; justify-content:center; background:var(--pink); color:#fff;" id="btnNextToCetak">Lanjut ke Cetak ➔</button>
     </div>
   </section>
 
   <!-- ================= CETAK PANEL ================= -->
   <section class="panel cetak-panel" id="panel-cetak">
     <span class="sticker" style="top:14px; right:56px;">⭐</span>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <button class="arrow-btn" onclick="goToTab('edit')" style="box-shadow: none; border: 1.5px solid #e9dcc4; font-size: 16px; width: 34px; height: 34px;">←</button>
-      <div class="ribbon yellow">CETAK</div>
-    </div>
-    <div class="section-label">Preview Cetak 💗</div>
-    <div class="cetak-body" style="display:flex; gap:20px; flex-wrap:wrap;">
-      <div class="cetak-preview" style="flex:1; display:flex; justify-content:center;">
-        <canvas id="printCanvas" width="220" height="500"></canvas>
-      </div>
-      <div class="size-options" style="flex:1; min-width:240px; display:flex; flex-direction:column; gap:10px;">
-        <div class="section-label" style="margin-top:0;">Pilih Layout</div>
-        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;">
-          <button class="size-btn" data-layout="2" style="justify-content:center;"><span class="bars">▌▌</span> 2 Foto</button>
-          <button class="size-btn" data-layout="3" style="justify-content:center;"><span class="bars">▌▌▌</span> 3 Foto</button>
-          <button class="size-btn" data-layout="4" style="justify-content:center;"><span class="bars">▌▌▌▌</span> 4 Foto</button>
-          <button class="size-btn active" data-layout="strip" style="justify-content:center;"><span class="bars">█</span> Strip</button>
+    <div class="ribbon yellow">CETAK</div>
+    <p class="hint" style="margin-top:-8px; margin-bottom:16px;">Pilih layout, ukuran, dan cetak fotomu! ✨</p>
+    <div class="cetak-body">
+      <div class="cetak-side">
+        <div class="cetak-group-label">Pilih Layout</div>
+        <div class="layout-grid" id="layoutGrid">
+          <button class="layout-btn" data-layout="2"><span class="bars"><i></i><i></i></span>2 Foto</button>
+          <button class="layout-btn" data-layout="3"><span class="bars"><i></i><i></i><i></i></span>3 Foto</button>
+          <button class="layout-btn active" data-layout="4"><span class="bars"><i></i><i></i><i></i><i></i></span>4 Foto</button>
+          <button class="layout-btn" data-layout="strip"><span class="bars"><i></i></span>Strip</button>
         </div>
-        
-        <div class="section-label" style="margin-top:10px;">Pilih Ukuran</div>
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
-          <button class="size-btn" data-size="4R" style="font-size:12px; padding:8px; justify-content:center;">4R</button>
-          <button class="size-btn active" data-size="polaroid" style="font-size:12px; padding:8px; justify-content:center;">Polaroid</button>
-          <button class="size-btn" data-size="square" style="font-size:12px; padding:8px; justify-content:center;">Square</button>
+
+        <div class="cetak-group-label">Pilih Ukuran</div>
+        <div class="size-grid" id="sizeGrid">
+          <button class="size-btn active" data-size="4r">4R <span class="dim">10x15cm</span></button>
+          <button class="size-btn" data-size="polaroid">Polaroid <span class="dim">8x10cm</span></button>
+          <button class="size-btn" data-size="square">Square <span class="dim">10x10cm</span></button>
         </div>
         <hr class="divider">
-        <button class="btn primary full" style="background:var(--yellow); color:#5c4a1c; font-size:16px; padding:14px; justify-content:center;" id="btnPrint">🖨️ Print</button>
-        <div style="display:flex; gap:10px; margin-top:4px;">
-          <button class="btn secondary" style="flex:1; justify-content:center; background:var(--pink-soft); color:#c04a6d;" id="btnSimpan">⬇️ Simpan</button>
-          <button class="btn ghost" style="flex:1; justify-content:center;" id="btnBagikan">🔗 Bagikan</button>
-        </div>
+        <button class="btn primary full" id="btnPrint">🖨️ Print</button>
+        <button class="btn secondary full" id="btnSimpan">⬇️ Simpan</button>
+        <button class="btn ghost full" id="btnBagikan">🔗 Bagikan</button>
+        <hr class="divider">
+        <button class="btn yellowbtn full" id="btnAmbilUlangSemua">🔄 Ambil Ulang Dari Awal</button>
+        <p class="hint" style="margin-top:6px;">Setelah selesai cetak/simpan, klik ini untuk mulai sesi foto baru dari nol seperti pertama kali buka aplikasi.</p>
+      </div>
+      <div class="cetak-preview">
+        <canvas id="printCanvas" width="220" height="500"></canvas>
       </div>
     </div>
-    <p class="hint" id="cetakHint">Ambil dan edit foto dulu di panel sebelah kiri untuk melihat hasil cetak di sini.</p>
+    <p class="hint" id="cetakHint">Ambil dan edit foto dulu untuk melihat hasil cetak di sini.</p>
   </section>
 
 </div>
@@ -589,7 +547,7 @@
       </div>
       <div class="section-label">Daftar Emot</div>
       <div id="adminEmotList"></div>
-      <p class="hint">Tambahkan atau hapus emot untuk stiker yang bisa dipakai di preview.</p>
+      <p class="hint">Tambahkan atau hapus emot untuk stiker yang bisa dipakai di preview. Tersimpan otomatis di perangkat ini.</p>
     </div>
 
     <!-- Tema -->
@@ -612,7 +570,7 @@
       </div>
       <div class="section-label">Daftar Tema (Background Polaroid)</div>
       <div id="adminThemeList"></div>
-      <p class="hint">Tambahkan tema baru (background polaroid) atau hapus tema yang tidak dipakai.</p>
+      <p class="hint">Tambahkan tema baru (background polaroid) atau hapus tema yang tidak dipakai. Tersimpan otomatis di perangkat ini.</p>
     </div>
 
     <!-- Efek -->
@@ -635,7 +593,7 @@
       </div>
       <div class="section-label">Daftar Efek</div>
       <div id="adminEffectList"></div>
-      <p class="hint">Tambahkan atau hapus efek foto. Efek "Tanpa Efek" tidak bisa dihapus.</p>
+      <p class="hint">Tambahkan atau hapus efek foto. Efek "Tanpa Efek" tidak bisa dihapus. Tersimpan otomatis di perangkat ini.</p>
     </div>
   </div>
 </div>
@@ -652,44 +610,18 @@
 
 <script>
 (function(){
-  // ---------------- STATE & PERSISTENCE ----------------
-  let storedThemes = localStorage.getItem('fb_themes');
-  let themes = storedThemes ? JSON.parse(storedThemes) : [
-    {name:'Klasik Biru', style:'polaroid', bg:'#ffffff', frame:'#dbeefc', accent:'#7ab8e8', bottomSpace:70},
-    {name:'Filmstrip Hitam', style:'filmstrip', bg:'#111111', frame:'#111111', accent:'#ffffff', bottomSpace:0},
-    {name:'Airmail', style:'airmail', bg:'#ffffff', frame:'#ffffff', accent:'#e05a5a', bottomSpace:0},
-    {name:'Minimal Krem', style:'minimal', bg:'#fdf8f0', frame:'#fdf8f0', accent:'#e2d3ad', bottomSpace:0},
-    {name:'Dotted Hitam', style:'dotted', bg:'#0d0d0d', frame:'#0d0d0d', accent:'#ffffff', bottomSpace:0}
-  ];
-
-  let storedStickerChoices = localStorage.getItem('fb_stickerChoices');
-  let stickerChoices = storedStickerChoices ? JSON.parse(storedStickerChoices) : ['⭐','💕','✨','🌸','🐻','🎀','🌈','☁️','🍒','😊'];
-
-  let storedEffects = localStorage.getItem('fb_effects');
-  let effects = storedEffects ? JSON.parse(storedEffects) : [
-    {id:'none', label:'Tanpa Efek', color:'#ffffff'},
-    {id:'vignette', label:'Vignette', color:'#7a6a55'},
-    {id:'grain', label:'Grain', color:'#b8b0a2'},
-    {id:'glow', label:'Glow', color:'#f6d76a'}
-  ];
-
-  let storedGallery = localStorage.getItem('fb_gallery');
-  let galleryList = storedGallery ? JSON.parse(storedGallery) : [];
-
-  const state = {
-    photos: [null, null, null, null], // dataURLs of captured photos (up to 4 slots)
-    activeSlotIndex: 0,
+  // ---------------- STATE ----------------
+const state = {
+    photos: [null, null, null, null], // dataURLs of captured/uploaded photos, fixed 4 slots
+    activeSlot: 0,
     themeIndex: 0,
     filter: 'none',
     effect: 'none',
-    borderColor: '#dbeefc',
     stickers: [],         // {emoji, xPct, yPct, size}
     texts: [],            // {text, font, color, size, xPct, yPct, styleId, fontStyle, fontWeight, bg, transform, letterSpacing, outline}
     selectedSticker: -1,
     selectedText: -1,
     layout: 'grid',
-    printLayout: 'strip', // layout count / layout mode ('2', '3', '4', 'strip')
-    printSize: 'polaroid', // aspect ratios ('4R', 'polaroid', 'square')
     textPos: 'bottom',
     textFont: "'Quicksand', sans-serif",
     textColor: '#ffffff',
@@ -697,19 +629,23 @@
     textStyleId: 'normal',
     stickerSize: 30,
     caption: '',
-    printCount: 4,
+    printLayout: '4',   // '2' | '3' | '4' | 'strip'
+    printSize: '4r',    // '4r' | 'polaroid' | 'square'
     stream: null,
-    gallery: galleryList
+    gallery: []
   };
 
-  function saveAdminData() {
-    localStorage.setItem('fb_themes', JSON.stringify(themes));
-    localStorage.setItem('fb_stickerChoices', JSON.stringify(stickerChoices));
-    localStorage.setItem('fb_effects', JSON.stringify(effects));
-    localStorage.setItem('fb_gallery', JSON.stringify(state.gallery));
-  }
-
   const PHOTO_W = 300, PHOTO_H = 220, GAP = 10;
+
+  const LS_KEY = 'fotobooth_admin_data_v1';
+
+  const DEFAULT_THEMES = [
+    {name:'Klasik Biru', style:'polaroid', bg:'#ffffff', frame:'#dbeefc', accent:'#7ab8e8', bottomSpace:70},
+    {name:'Filmstrip Hitam', style:'filmstrip', bg:'#111111', frame:'#111111', accent:'#ffffff', bottomSpace:0},
+    {name:'Airmail', style:'airmail', bg:'#ffffff', frame:'#ffffff', accent:'#e05a5a', bottomSpace:0},
+    {name:'Minimal Krem', style:'minimal', bg:'#fdf8f0', frame:'#fdf8f0', accent:'#e2d3ad', bottomSpace:0},
+    {name:'Dotted Hitam', style:'dotted', bg:'#0d0d0d', frame:'#0d0d0d', accent:'#ffffff', bottomSpace:0}
+  ];
 
   const filters = [
     {id:'none', label:'Normal', css:'none', color:'#ffffff'},
@@ -720,7 +656,38 @@
     {id:'warm', label:'Warm', css:'saturate(1.3) hue-rotate(-15deg)', color:'#f3b06b'}
   ];
 
-  const borderColors = ['#dbeefc','#fde3ec','#fdf0cf','#ffffff','#2b2b2b','#e2d3ad'];
+  const DEFAULT_EFFECTS = [
+    {id:'none', label:'Tanpa Efek', color:'#ffffff'},
+    {id:'vignette', label:'Vignette', color:'#7a6a55'},
+    {id:'grain', label:'Grain', color:'#b8b0a2'},
+    {id:'glow', label:'Glow', color:'#f6d76a'}
+  ];
+
+  const DEFAULT_STICKER_CHOICES = ['⭐','💕','✨','🌸','🐻','🎀','🌈','☁️','🍒','😊'];
+
+  // ---------------- ADMIN DATA PERSISTENCE (localStorage) ----------------
+  function loadAdminData(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.themes) && Array.isArray(parsed.effects) && Array.isArray(parsed.stickerChoices)){
+        return parsed;
+      }
+    }catch(e){ /* ignore corrupted data */ }
+    return null;
+  }
+
+  function saveAdminData(){
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify({themes, effects, stickerChoices}));
+    }catch(e){ /* storage might be unavailable, fail silently */ }
+  }
+
+  const savedAdmin = loadAdminData();
+  let themes = savedAdmin ? savedAdmin.themes : DEFAULT_THEMES.map(t=>({...t}));
+  let effects = savedAdmin ? savedAdmin.effects : DEFAULT_EFFECTS.map(e=>({...e}));
+  let stickerChoices = savedAdmin ? savedAdmin.stickerChoices : DEFAULT_STICKER_CHOICES.slice();
 
   const fontChoices = [
     {id:"'Quicksand', sans-serif", label:'Quicksand', color:'#7ab8e8'},
@@ -759,6 +726,8 @@
   const btnAmbil = document.getElementById('btnAmbil');
   const btnUlangi = document.getElementById('btnUlangi');
   const btnGaleri = document.getElementById('btnGaleri');
+  const btnUpload = document.getElementById('btnUpload');
+  const uploadInput = document.getElementById('uploadInput');
   const camHint = document.getElementById('camHint');
 
   const editCanvas = document.getElementById('editCanvas');
@@ -773,7 +742,6 @@
 
   // ---------------- TAB SWITCHING (satu panel ditampilkan per waktu) ----------------
   function goToTab(tabName){
-    document.body.className = 'tab-' + tabName;
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabName));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active-panel'));
     document.querySelectorAll('.step-dot').forEach(d=>d.classList.toggle('on', d.dataset.step===tabName));
@@ -838,21 +806,7 @@
   buildSwatchRow(document.getElementById('filterOptions'), filters, 'filter');
   buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
 
-  // border swatches (color values directly)
-  const borderContainer = document.getElementById('borderOptions');
-  function buildBorderSwatches(){
-    borderContainer.innerHTML = '';
-    borderColors.forEach(c=>{
-      const s = document.createElement('div');
-      s.className = 'swatch' + (state.borderColor===c ? ' active' : '');
-      s.style.background = c;
-      s.addEventListener('click', ()=>{ state.borderColor = c; buildBorderSwatches(); renderAll(); });
-      borderContainer.appendChild(s);
-    });
-  }
-buildBorderSwatches();
-
-// font swatches
+  // font swatches
   const fontContainer = document.getElementById('fontOptions');
   function buildFontSwatches(){
     fontContainer.innerHTML = '';
@@ -1032,7 +986,7 @@ buildBorderSwatches();
     }
   });
 
-// sticker picker
+  // sticker picker
   const stickerContainer = document.getElementById('stickerOptions');
   function rebuildStickerPicker(){
     stickerContainer.innerHTML = '';
@@ -1050,7 +1004,6 @@ buildBorderSwatches();
   rebuildStickerPicker();
 
   // caption input -> adds/updates text object (draggable, positioned freely like stickers)
-  // sekarang juga membawa gaya yang sedang dipilih (font, warna, background, dsb) — sama seperti preview besar di atas
   document.getElementById('captionInput').addEventListener('input', (e)=>{
     const t = e.target.value;
     state.caption = t;
@@ -1061,7 +1014,6 @@ buildBorderSwatches();
       renderAll();
       return;
     }
-    // if there's a currently selected text, update it; otherwise create a new draggable text with current style
     if(state.selectedText >= 0 && state.texts[state.selectedText]){
       state.texts[state.selectedText].text = t;
     } else {
@@ -1115,7 +1067,7 @@ buildBorderSwatches();
     countdownEl.style.display = 'flex';
     for(let n=5; n>=1; n--){
       countdownEl.textContent = n;
-      await sleep(1000);
+      await sleep(700);
     }
     countdownEl.style.display = 'none';
   }
@@ -1136,141 +1088,117 @@ buildBorderSwatches();
     return c.toDataURL('image/png');
   }
 
+  // ---------------- SLOT MANAGEMENT (pilih slot mana yg mau diisi/diulang) ----------------
+  function setActiveSlot(i){
+    state.activeSlot = i;
+    updateThumbSlots();
+  }
+
+  function nextEmptyOrLoopSlot(){
+    for(let i=0;i<4;i++){ if(!state.photos[i]) return i; }
+    // semua terisi -> lanjut berputar ke slot berikutnya
+    return (state.activeSlot + 1) % 4;
+  }
+
   function updateThumbSlots(){
-    const slots = document.querySelectorAll('#thumbStrip .thumb-slot');
-    slots.forEach((slot, i)=>{
-      const existingImg = slot.querySelector('img');
-      if (existingImg) existingImg.remove();
-      
-      slot.classList.toggle('active', i === state.activeSlotIndex);
-      
+    thumbSlots.forEach((slot, i)=>{
+      slot.innerHTML = '';
+      slot.classList.toggle('active-slot', state.activeSlot === i);
+
+      const num = document.createElement('span');
+      num.className = 'slot-num';
+      num.textContent = i+1;
+      slot.appendChild(num);
+
       if(state.photos[i]){
         const img = document.createElement('img');
         img.src = state.photos[i];
         slot.appendChild(img);
-        const clearBtn = slot.querySelector('.slot-clear');
-        if (clearBtn) clearBtn.style.display = 'flex';
-      } else {
-        const clearBtn = slot.querySelector('.slot-clear');
-        if (clearBtn) clearBtn.style.display = 'none';
+
+        const del = document.createElement('button');
+        del.className = 'slot-del';
+        del.textContent = '✕';
+        del.title = 'Hapus foto slot ini';
+        del.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          state.photos[i] = null;
+          updateThumbSlots();
+          renderAll();
+        });
+        slot.appendChild(del);
+      }
+
+      if(state.activeSlot === i){
+        const badge = document.createElement('span');
+        badge.className = 'active-badge';
+        badge.textContent = 'AKTIF';
+        slot.appendChild(badge);
       }
     });
   }
+
+  thumbSlots.forEach((slot, i)=>{
+    slot.addEventListener('click', ()=> setActiveSlot(i));
+  });
 
   btnAmbil.addEventListener('click', async ()=>{
     btnAmbil.disabled = true;
     const ok = state.stream ? true : await startCamera();
     if(!ok){ btnAmbil.disabled = false; return; }
-    
-    camHint.textContent = `Bersiap... Mengambil foto untuk Slot ${state.activeSlotIndex + 1}...`;
+    camHint.textContent = 'Bersiap... foto akan diambil otomatis setelah hitungan mundur selesai.';
     await countdownThen();
     const dataUrl = capturePhoto();
-    state.photos[state.activeSlotIndex] = dataUrl;
-    
-    // Auto-advance to the next slot index
-    state.activeSlotIndex = (state.activeSlotIndex + 1) % 4;
-    
+    state.photos[state.activeSlot] = dataUrl;
     updateThumbSlots();
     renderAll();
-    
-    camHint.textContent = 'Foto slot berhasil diambil! Klik slot lain jika ingin mengulang, atau klik "Lanjut ke Edit".';
+    // otomatis lanjut ke slot kosong berikutnya (atau berputar bila semua sudah terisi)
+    setActiveSlot(nextEmptyOrLoopSlot());
+    const filled = state.photos.filter(Boolean).length;
+    camHint.textContent = filled >= 4
+      ? '4 foto berhasil diambil! Lanjut ke tab Edit untuk mempercantik foto kamu, atau klik slot manapun untuk mengulang.'
+      : 'Foto tersimpan di slot ' + (state.photos.indexOf(dataUrl)+1) + '. Klik "Ambil Foto" lagi untuk slot berikutnya.';
+    stopCamera();
     btnAmbil.disabled = false;
+    if(filled >= 4){ setTimeout(()=> goToTab('edit'), 700); }
   });
 
+  // "Ulangi" sekarang hanya menghapus foto di slot yang sedang aktif
   btnUlangi.addEventListener('click', ()=>{
-    state.photos[state.activeSlotIndex] = null;
+    state.photos[state.activeSlot] = null;
     updateThumbSlots();
+    stopCamera();
+    camHint.textContent = 'Slot ' + (state.activeSlot+1) + ' dikosongkan. Klik "Ambil Foto" untuk mengisinya lagi.';
     renderAll();
-    camHint.textContent = `Foto di slot ${state.activeSlotIndex + 1} telah dihapus/diulangi.`;
   });
 
-  // Slot click events and delete events delegation
-  const stripEl = document.getElementById('thumbStrip');
-  if (stripEl) {
-    stripEl.addEventListener('click', (e) => {
-      const slot = e.target.closest('.thumb-slot');
-      if (!slot) return;
-      
-      const idx = parseInt(slot.dataset.idx);
-      
-      if (e.target.classList.contains('slot-clear')) {
-        e.stopPropagation();
-        state.photos[idx] = null;
-        state.activeSlotIndex = idx;
+  // ---------------- UPLOAD DARI HP (HD) ----------------
+  btnUpload.addEventListener('click', ()=> uploadInput.click());
+  uploadInput.addEventListener('change', (e)=>{
+    const files = Array.from(e.target.files || []).slice(0, 4);
+    if(!files.length) return;
+    let slot = state.activeSlot;
+    let remaining = files.length;
+    files.forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = (ev)=>{
+        // cari slot kosong berikutnya mulai dari slot aktif, agar foto HD tidak menimpa foto lain secara tak sengaja
+        let target = slot;
+        let tries = 0;
+        while(state.photos[target] && tries < 4){ target = (target+1)%4; tries++; }
+        state.photos[target] = ev.target.result;
+        slot = (target+1)%4;
         updateThumbSlots();
         renderAll();
-        camHint.textContent = `Foto di slot ${idx + 1} dihapus.`;
-        return;
-      }
-      
-      state.activeSlotIndex = idx;
-      updateThumbSlots();
-      camHint.textContent = `Slot ${idx + 1} aktif. Klik "Ambil Foto" untuk menjepret.`;
+        remaining--;
+        if(remaining <= 0){
+          setActiveSlot(nextEmptyOrLoopSlot());
+          camHint.textContent = 'Foto HD dari HP berhasil dimasukkan. Lanjut ke tab Edit kapan saja.';
+        }
+      };
+      reader.readAsDataURL(file);
     });
-  }
-
-  // Upload HD files feature
-  const btnUploadHD = document.getElementById('btnUploadHD');
-  const fileUploadHD = document.getElementById('fileUploadHD');
-  if (btnUploadHD && fileUploadHD) {
-    btnUploadHD.addEventListener('click', () => {
-      fileUploadHD.click();
-    });
-    
-    fileUploadHD.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      if (files.length === 0) return;
-      
-      let slotsFilled = 0;
-      files.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const targetIndex = (state.activeSlotIndex + slotsFilled) % 4;
-          state.photos[targetIndex] = event.target.result;
-          slotsFilled++;
-          
-          if (slotsFilled === files.length || slotsFilled === 4) {
-            state.activeSlotIndex = (state.activeSlotIndex + slotsFilled) % 4;
-            updateThumbSlots();
-            renderAll();
-            camHint.textContent = `${files.length} foto HD berhasil diunggah!`;
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-      fileUploadHD.value = '';
-    });
-  }
-
-  // Next page buttons
-  const btnNextToEdit = document.getElementById('btnNextToEdit');
-  if (btnNextToEdit) {
-    btnNextToEdit.addEventListener('click', () => {
-      goToTab('edit');
-    });
-  }
-
-  const btnNextToCetak = document.getElementById('btnNextToCetak');
-  if (btnNextToCetak) {
-    btnNextToCetak.addEventListener('click', () => {
-      goToTab('cetak');
-    });
-  }
-
-  const btnEditSimpan = document.getElementById('btnEditSimpan');
-  if (btnEditSimpan) {
-    btnEditSimpan.addEventListener('click', () => {
-      // Trigger the download of print canvas
-      const dataUrl = printCanvas.toDataURL('image/png');
-      state.gallery.push(dataUrl);
-      saveAdminData();
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = 'foto-booth-edit-' + Date.now() + '.png';
-      a.click();
-      alert('Foto hasil edit berhasil disimpan ke galeri dan diunduh! 💕');
-    });
-  }
+    uploadInput.value = '';
+  });
 
   // ---------------- GALERI ----------------
   const galeriModal = document.getElementById('galeriModal');
@@ -1280,10 +1208,28 @@ buildBorderSwatches();
   function refreshGalleryGrid(){
     galleryGrid.innerHTML = '';
     emptyGalleryMsg.style.display = state.gallery.length ? 'none' : 'block';
-    state.gallery.forEach(item=>{
+    state.gallery.forEach((item, i)=>{
+      const wrap = document.createElement('div');
+      wrap.className = 'gallery-item';
+
       const img = document.createElement('img');
       img.src = item;
-      galleryGrid.appendChild(img);
+      wrap.appendChild(img);
+
+      const del = document.createElement('button');
+      del.className = 'gallery-del';
+      del.textContent = '✕';
+      del.title = 'Hapus foto tersimpan ini';
+      del.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const ok = confirm('Hapus foto tersimpan ini dari galeri?');
+        if(!ok) return;
+        state.gallery.splice(i, 1);
+        refreshGalleryGrid();
+      });
+      wrap.appendChild(del);
+
+      galleryGrid.appendChild(wrap);
     });
   }
 
@@ -1303,80 +1249,6 @@ buildBorderSwatches();
     });
   }
 
-  function drawSprockets(ctx, borderW, totalW, totalH, color){
-    ctx.fillStyle = color;
-    const holeR = 4, spacing = 22;
-    for(let y = borderW; y < totalH - borderW; y += spacing){
-      ctx.beginPath(); ctx.arc(borderW/2, y, holeR, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(totalW - borderW/2, y, holeR, 0, Math.PI*2); ctx.fill();
-    }
-  }
-
-  function drawDots(ctx, borderW, totalW, totalH, color){
-    ctx.fillStyle = color;
-    const size = 4, spacing = 12;
-    for(let x = borderW; x < totalW - borderW; x += spacing){
-      ctx.fillRect(x, borderW/2 - size/2, size, size);
-      ctx.fillRect(x, totalH - borderW/2 - size/2, size, size);
-    }
-    for(let y = borderW; y < totalH - borderW; y += spacing){
-      ctx.fillRect(borderW/2 - size/2, y, size, size);
-      ctx.fillRect(totalW - borderW/2 - size/2, y, size, size);
-    }
-  }
-
-  function drawAirmailStripes(ctx, borderW, totalW, totalH){
-    const stripeW = 10;
-    for(let i=0, x=0; x < totalW; i++, x += stripeW){
-      ctx.fillStyle = i % 2 === 0 ? '#e05a5a' : '#3a6bd8';
-      ctx.fillRect(x, 0, stripeW, borderW*0.55);
-      ctx.fillRect(x, totalH - borderW*0.55, stripeW, borderW*0.55);
-    }
-    for(let i=0, y=0; y < totalH; i++, y += stripeW){
-      ctx.fillStyle = i % 2 === 0 ? '#e05a5a' : '#3a6bd8';
-      ctx.fillRect(0, y, borderW*0.55, stripeW);
-      ctx.fillRect(totalW - borderW*0.55, y, borderW*0.55, stripeW);
-    }
-  }
-
-  // ---------- layout computation (setiap foto punya kartu/border sendiri) ----------
-  const BORDER = 16;
-
-  function getPhotoDimensions() {
-    let w = 300, h = 220;
-    if (state.printSize === 'square') {
-      w = 260; h = 260;
-    } else if (state.printSize === '4R') {
-      w = 300; h = 200;
-    } else if (state.printSize === 'polaroid') {
-      w = 300; h = 225;
-    }
-    return { w, h };
-  }
-
-  function computeLayout(count){
-    const theme = themes[state.themeIndex];
-    const { w: photoW, h: photoH } = getPhotoDimensions();
-    
-    let numPhotos = 4;
-    if (state.printLayout === '2') numPhotos = 2;
-    else if (state.printLayout === '3') numPhotos = 3;
-    else if (state.printLayout === '4' || state.printLayout === 'strip') numPhotos = 4;
-    
-    const photosToUse = state.photos.slice(0, numPhotos);
-    const n = Math.max(photosToUse.length, numPhotos);
-    
-    const totalW = photoW + BORDER*2;
-    const bottomSpace = (state.printLayout === 'strip') ? 35 : theme.bottomSpace;
-    const totalH = BORDER*2 + n*photoH + (n-1)*GAP + bottomSpace;
-    const cards = [];
-    for(let i=0; i<n; i++){
-      cards.push({x: BORDER, y: BORDER + i*(photoH+GAP)});
-    }
-    return {cards, cols:1, rows:n, totalW, totalH, n, cardW:totalW, cardH:totalH, photoW, photoH};
-  }
-
-  // hiasan tepi per kartu
   function drawFilmstripEdges(ctx, x, y, w, h, color){
     ctx.fillStyle = color;
     const holeR = 4, spacing = 22;
@@ -1414,6 +1286,51 @@ buildBorderSwatches();
     }
   }
 
+  // ---------- layout computation (setiap foto punya kartu/border sendiri) ----------
+  const BORDER = 16;
+
+  function computeLayout(count){
+    const theme = themes[state.themeIndex];
+    const photosToUse = state.photos.slice(0, count);
+    const n = Math.max(photosToUse.length, count);
+    // satu bingkai polaroid utuh (tidak dipisah), foto disusun ke bawah (vertikal)
+    const totalW = PHOTO_W + BORDER*2;
+    const totalH = BORDER*2 + n*PHOTO_H + (n-1)*GAP + theme.bottomSpace;
+    const cards = [];
+    for(let i=0; i<n; i++){
+      cards.push({x: BORDER, y: BORDER + i*(PHOTO_H+GAP)});
+    }
+    return {cards, cols:1, rows:n, totalW, totalH, n, cardW:totalW, cardH:totalH};
+  }
+
+  // ---------- print-specific layout: dukungan layout (2/3/4/strip) + ukuran (4r/polaroid/square) ----------
+  const SIZE_RATIOS = {
+    '4r': 3/2,        // 10x15cm ~ potret 2:3
+    'polaroid': 4/3,   // 8x10cm ~ dekat 4:3 (potret)
+    'square': 1/1      // 10x10cm
+  };
+
+  function computePrintLayout(){
+    const theme = themes[state.themeIndex];
+    const isStrip = state.printLayout === 'strip';
+    const count = isStrip ? 4 : Number(state.printLayout);
+    const ratio = SIZE_RATIOS[state.printSize] || SIZE_RATIOS['4r']; // width/height of each photo tile
+
+    const tileW = isStrip ? 150 : PHOTO_W;
+    const tileH = Math.round(tileW / ratio);
+    const border = isStrip ? 10 : BORDER;
+    const gap = isStrip ? 6 : GAP;
+
+    const totalW = tileW + border*2;
+    const totalH = border*2 + count*tileH + (count-1)*gap + theme.bottomSpace;
+
+    const cards = [];
+    for(let i=0;i<count;i++){
+      cards.push({x: border, y: border + i*(tileH+gap)});
+    }
+    return {cards, count, tileW, tileH, border, gap, totalW, totalH};
+  }
+
   function drawCardFrame(ctx, x, y, cardW, cardH, theme){
     ctx.fillStyle = theme.frame || theme.bg;
     ctx.fillRect(x, y, cardW, cardH);
@@ -1423,6 +1340,25 @@ buildBorderSwatches();
     ctx.strokeStyle = theme.accent;
     ctx.lineWidth = 2;
     ctx.strokeRect(x+4, y+4, cardW-8, cardH-8);
+  }
+
+  // gambar foto ke tile dengan crop "cover" agar sesuai rasio ukuran cetak yang dipilih
+  function drawPhotoCover(ctx, img, dx, dy, dw, dh){
+    const srcRatio = img.width / img.height;
+    const dstRatio = dw / dh;
+    let sx, sy, sw, sh;
+    if(srcRatio > dstRatio){
+      sh = img.height;
+      sw = sh * dstRatio;
+      sx = (img.width - sw) / 2;
+      sy = 0;
+    } else {
+      sw = img.width;
+      sh = sw / dstRatio;
+      sx = 0;
+      sy = (img.height - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
   }
 
   // menggambar teks di canvas mengikuti gaya (styleId) masing-masing: font-style, weight, transform, background chip, outline
@@ -1458,7 +1394,6 @@ buildBorderSwatches();
       ctx.fill();
     }
 
-    // draw dengan letter-spacing manual (karakter per karakter jika ada spacing)
     ctx.fillStyle = tx.color || state.textColor;
     if(ls !== 0 && renderText.length > 1){
       let startX = sx - textWidth/2;
@@ -1492,9 +1427,53 @@ buildBorderSwatches();
     ctx.restore();
   }
 
+  function applyPhotoEffect(ctx, img, px, py, pw, ph){
+    const effDef = effects.find(e=>e.id===state.effect);
+    const effType = effDef ? (effDef.type || effDef.id) : null;
+    if(effType === 'vignette'){
+      const grad = ctx.createRadialGradient(px+pw/2, py+ph/2, ph*0.2, px+pw/2, py+ph/2, ph*0.75);
+      grad.addColorStop(0,'rgba(0,0,0,0)');
+      grad.addColorStop(1,'rgba(0,0,0,0.35)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(px, py, pw, ph);
+    } else if(effType === 'grain'){
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      for(let g=0; g<250; g++){
+        ctx.fillStyle = Math.random()>0.5 ? '#fff' : '#000';
+        ctx.fillRect(px+Math.random()*pw, py+Math.random()*ph, 1.5, 1.5);
+      }
+      ctx.restore();
+    } else if(effType === 'glow'){
+      ctx.save();
+      ctx.globalAlpha = 0.18;
+      ctx.fillStyle = '#fff6d0';
+      ctx.fillRect(px, py, pw, ph);
+      ctx.restore();
+    } else if(effType === 'blur'){
+      ctx.save();
+      ctx.filter = 'blur(3px)';
+      drawPhotoCover(ctx, img, px, py, pw, ph);
+      ctx.restore();
+    } else if(effType === 'shadow'){
+      ctx.save();
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(px, py, pw, ph);
+      ctx.restore();
+    } else if(effDef && effDef.css && effDef.css !== 'none'){
+      ctx.save();
+      ctx.filter = effDef.css;
+      drawPhotoCover(ctx, img, px, py, pw, ph);
+      ctx.restore();
+    }
+  }
+
+  // ---------- EDIT preview (selalu 4 foto tetap, tema editor) ----------
   async function drawStrip(ctx, canvasEl, count, forPrint){
     const theme = themes[state.themeIndex];
-    const {cards, totalW, totalH, n, photoW, photoH} = computeLayout(count);
+    const photosToUse = state.photos.slice(0, count);
+    const {cards, totalW, totalH, n} = computeLayout(count);
 
     canvasEl.width = totalW;
     canvasEl.height = totalH;
@@ -1520,75 +1499,37 @@ buildBorderSwatches();
       const px = card.x;
       const py = card.y;
 
-      const photoSrc = state.photos[i];
-
-      if(photoSrc){
-        const img = await getImg(photoSrc);
+      if(photosToUse[i]){
+        const img = await getImg(photosToUse[i]);
         const filterDef = filters.find(f=>f.id===state.filter) || filters[0];
         ctx.save();
         ctx.filter = filterDef.css;
-        ctx.drawImage(img, px, py, photoW, photoH);
+        ctx.drawImage(img, px, py, PHOTO_W, PHOTO_H);
         ctx.restore();
-
-        const effDef = effects.find(e=>e.id===state.effect);
-        const effType = effDef ? (effDef.type || effDef.id) : null;
-        if(effType === 'vignette'){
-          const grad = ctx.createRadialGradient(px+photoW/2, py+photoH/2, photoH*0.2, px+photoW/2, py+photoH/2, photoH*0.75);
-          grad.addColorStop(0,'rgba(0,0,0,0)');
-          grad.addColorStop(1,'rgba(0,0,0,0.35)');
-          ctx.fillStyle = grad;
-          ctx.fillRect(px, py, photoW, photoH);
-        } else if(effType === 'grain'){
-          ctx.save();
-          ctx.globalAlpha = 0.06;
-          for(let g=0; g<250; g++){
-            ctx.fillStyle = Math.random()>0.5 ? '#fff' : '#000';
-            ctx.fillRect(px+Math.random()*photoW, py+Math.random()*photoH, 1.5, 1.5);
-          }
-          ctx.restore();
-        } else if(effType === 'glow'){
-          ctx.save();
-          ctx.globalAlpha = 0.18;
-          ctx.fillStyle = '#fff6d0';
-          ctx.fillRect(px, py, photoW, photoH);
-          ctx.restore();
-        } else if(effType === 'blur'){
-          ctx.save();
-          ctx.filter = 'blur(3px)';
-          ctx.drawImage(img, px, py, photoW, photoH);
-          ctx.restore();
-        } else if(effType === 'shadow'){
-          ctx.save();
-          ctx.globalAlpha = 0.25;
-          ctx.fillStyle = '#000';
-          ctx.fillRect(px, py, photoW, photoH);
-          ctx.restore();
-        } else if(effDef && effDef.css && effDef.css !== 'none'){
-          ctx.save();
-          ctx.filter = effDef.css;
-          ctx.drawImage(img, px, py, photoW, photoH);
-          ctx.restore();
-        }
+        applyPhotoEffect(ctx, img, px, py, PHOTO_W, PHOTO_H);
       } else {
         ctx.fillStyle = '#dfe4e8';
-        ctx.fillRect(px, py, photoW, photoH);
+        ctx.fillRect(px, py, PHOTO_W, PHOTO_H);
         ctx.fillStyle = '#a9b1b9';
         ctx.font = '16px Quicksand';
         ctx.textAlign = 'center';
-        ctx.fillText('Belum ada foto', px+photoW/2, py+photoH/2);
+        ctx.fillText('Belum ada foto', px+PHOTO_W/2, py+PHOTO_H/2);
       }
     }
 
     // caption di ruang bawah bingkai polaroid (hanya untuk tema yang punya bottomSpace)
-    if(theme.bottomSpace > 0 && state.printLayout !== 'strip'){
+    if(theme.bottomSpace > 0){
       ctx.fillStyle = '#4a4038';
       ctx.font = "26px 'Caveat', cursive";
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(state.caption || 'my memories', totalW/2, totalH - theme.bottomSpace/2);
     }
-    // ---- teks & stiker digambar ke canvas hanya saat cetak/simpan (menghindari double render stiker) ----
-    if (forPrint) {
+
+    // ---- teks & stiker: HANYA digambar ke canvas saat forPrint (export/print/simpan). ----
+    // Saat mode edit (!forPrint) elemen ini sepenuhnya jadi tanggung jawab DOM overlay di bawah,
+    // supaya tidak muncul dobel (satu di canvas, satu lagi elemen draggable di atasnya).
+    if(forPrint){
       state.texts.forEach((tx)=>{
         if(!tx.text) return;
         const sx = tx.xPct * totalW;
@@ -1644,6 +1585,70 @@ buildBorderSwatches();
     }
 
     return {totalW, totalH};
+  }
+
+  // ---------- PRINT preview: mendukung layout 2/3/4/strip & ukuran 4R/Polaroid/Square ----------
+  async function drawPrintStrip(ctx, canvasEl){
+    const theme = themes[state.themeIndex];
+    const {cards, count, tileW, tileH, totalW, totalH} = computePrintLayout();
+    const photosToUse = state.photos.slice(0, count);
+
+    canvasEl.width = totalW;
+    canvasEl.height = totalH;
+    ctx.clearRect(0,0,totalW,totalH);
+
+    ctx.fillStyle = '#f4ece0';
+    ctx.fillRect(0,0,totalW,totalH);
+
+    ctx.fillStyle = theme.frame || theme.bg;
+    ctx.fillRect(0,0,totalW,totalH);
+    if(theme.style === 'filmstrip'){ drawFilmstripEdges(ctx, 0, 0, totalW, totalH, '#ffffff'); }
+    if(theme.style === 'dotted'){ drawDottedEdges(ctx, 0, 0, totalW, totalH, '#ffffff'); }
+    if(theme.style === 'airmail'){ drawAirmailEdges(ctx, 0, 0, totalW, totalH); }
+    ctx.strokeStyle = theme.accent;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(4,4,totalW-8,totalH-8);
+
+    for(let i=0;i<count;i++){
+      const card = cards[i];
+      const px = card.x, py = card.y;
+      if(photosToUse[i]){
+        const img = await getImg(photosToUse[i]);
+        const filterDef = filters.find(f=>f.id===state.filter) || filters[0];
+        ctx.save();
+        ctx.filter = filterDef.css;
+        drawPhotoCover(ctx, img, px, py, tileW, tileH);
+        ctx.restore();
+        applyPhotoEffect(ctx, img, px, py, tileW, tileH);
+      } else {
+        ctx.fillStyle = '#dfe4e8';
+        ctx.fillRect(px, py, tileW, tileH);
+        ctx.fillStyle = '#a9b1b9';
+        ctx.font = '13px Quicksand';
+        ctx.textAlign = 'center';
+        ctx.fillText('Belum ada foto', px+tileW/2, py+tileH/2);
+      }
+    }
+
+    if(theme.bottomSpace > 0){
+      ctx.fillStyle = '#4a4038';
+      ctx.font = "24px 'Caveat', cursive";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(state.caption || 'my memories', totalW/2, totalH - theme.bottomSpace/2);
+    }
+
+    // stiker & teks tetap ikut tampil di hasil cetak, diposisikan relatif terhadap kanvas cetak
+    state.texts.forEach((tx)=>{
+      if(!tx.text) return;
+      drawStyledText(ctx, tx, tx.xPct*totalW, tx.yPct*totalH);
+    });
+    state.stickers.forEach((st)=>{
+      ctx.font = (st.size || state.stickerSize) + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(st.emoji, st.xPct*totalW, st.yPct*totalH);
+    });
   }
 
   function attachDrag(el, type, idx, canvasEl){
@@ -1709,25 +1714,20 @@ buildBorderSwatches();
     }
   }
 
-async function drawStripSilent(ctx, canvasEl, count){
+  async function drawStripSilent(ctx, canvasEl, count){
     // like drawStrip but never touches the DOM overlay (used during drag for smooth updates)
     const {totalW, totalH} = computeLayout(count);
     ctx.clearRect(0,0,totalW,totalH);
-    await drawStrip(ctx, canvasEl, count, false); // pass false to avoid double sticker render during drag!
+    await drawStrip(ctx, canvasEl, count, true);
   }
 
   async function renderPrintPreview(){
-    document.querySelectorAll('.size-btn[data-layout]').forEach(b=> b.classList.toggle('active', b.dataset.layout === state.printLayout));
-    document.querySelectorAll('.size-btn[data-size]').forEach(b=> b.classList.toggle('active', b.dataset.size === state.printSize));
-    
-    let count = 4;
-    if (state.printLayout === '2') count = 2;
-    else if (state.printLayout === '3') count = 3;
-    
-    await drawStrip(printCtx, printCanvas, count, true);
+    document.querySelectorAll('.layout-btn').forEach(b=> b.classList.toggle('active', b.dataset.layout===state.printLayout));
+    document.querySelectorAll('.size-btn').forEach(b=> b.classList.toggle('active', b.dataset.size===state.printSize));
+    await drawPrintStrip(printCtx, printCanvas);
     const cetakHint = document.getElementById('cetakHint');
-    const hasPhoto = state.photos.some(p => p !== null);
-    cetakHint.textContent = hasPhoto ? 'Preview siap! Kamu bisa print, simpan, atau bagikan hasil foto booth kamu.' : 'Ambil dan edit foto dulu di panel sebelah kiri untuk melihat hasil cetak di sini.';
+    const filled = state.photos.filter(Boolean).length;
+    cetakHint.textContent = filled ? 'Preview siap! Kamu bisa print, simpan, atau bagikan hasil foto booth kamu.' : 'Ambil dan edit foto dulu untuk melihat hasil cetak di sini.';
   }
 
   async function renderAll(){
@@ -1735,16 +1735,16 @@ async function drawStripSilent(ctx, canvasEl, count){
     await renderPrintPreview();
   }
 
-  // Layout buttons click handlers
-  document.querySelectorAll('.size-btn[data-layout]').forEach(btn=>{
+  // layout buttons (2/3/4/strip)
+  document.querySelectorAll('.layout-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.printLayout = btn.dataset.layout;
       renderPrintPreview();
     });
   });
 
-  // Size buttons click handlers
-  document.querySelectorAll('.size-btn[data-size]').forEach(btn=>{
+  // size buttons (4R / Polaroid / Square)
+  document.querySelectorAll('.size-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.printSize = btn.dataset.size;
       renderPrintPreview();
@@ -1765,6 +1765,37 @@ async function drawStripSilent(ctx, canvasEl, count){
     a.click();
   });
 
+  // ---------------- AMBIL ULANG DARI AWAL (reset penuh, seperti pertama kali buka aplikasi) ----------------
+  document.getElementById('btnAmbilUlangSemua').addEventListener('click', ()=>{
+    const filled = state.photos.filter(Boolean).length;
+    if(filled > 0){
+      const ok = confirm('Mulai sesi foto baru? Semua foto, stiker, dan teks yang belum disimpan akan dihapus.');
+      if(!ok) return;
+    }
+    state.photos = [null, null, null, null];
+    state.activeSlot = 0;
+    state.stickers = [];
+    state.texts = [];
+    state.caption = '';
+    state.selectedSticker = -1;
+    state.selectedText = -1;
+    state.filter = 'none';
+    state.effect = 'none';
+    state.themeIndex = 0;
+    state.printLayout = '4';
+    state.printSize = '4r';
+    document.getElementById('captionInput').value = '';
+    buildSwatchRow(document.getElementById('filterOptions'), filters, 'filter');
+    buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
+    buildThemeThumbs();
+    updateTextStylePreview();
+    stopCamera();
+    updateThumbSlots();
+    camHint.textContent = 'Siap untuk ambil foto! Klik "Ambil Foto" lalu izinkan akses kamera.';
+    renderAll();
+    goToTab('camera');
+  });
+
   document.getElementById('btnBagikan').addEventListener('click', async ()=>{
     printCanvas.toBlob(async (blob)=>{
       if(!blob) return;
@@ -1782,7 +1813,7 @@ async function drawStripSilent(ctx, canvasEl, count){
     }, 'image/png');
   });
 
-// ---------------- ADMIN PANEL ----------------
+  // ---------------- ADMIN PANEL ----------------
   const adminModal = document.getElementById('adminModal');
   const adminEmotInput = document.getElementById('adminEmotInput');
   const adminEmotList = document.getElementById('adminEmotList');
@@ -1816,6 +1847,7 @@ async function drawStripSilent(ctx, canvasEl, count){
       del.textContent = '🗑️';
       del.addEventListener('click', ()=>{
         stickerChoices.splice(i, 1);
+        saveAdminData();
         refreshEmotList();
         rebuildStickerPicker();
         renderAll();
@@ -1830,6 +1862,7 @@ async function drawStripSilent(ctx, canvasEl, count){
     if(!val) return;
     stickerChoices.push(val);
     adminEmotInput.value = '';
+    saveAdminData();
     refreshEmotList();
     rebuildStickerPicker();
     renderAll();
@@ -1851,6 +1884,7 @@ async function drawStripSilent(ctx, canvasEl, count){
         if(state.themeIndex === i) state.themeIndex = 0;
         if(state.themeIndex > i) state.themeIndex--;
         themes.splice(i, 1);
+        saveAdminData();
         refreshThemeList();
         buildThemeThumbs();
         renderAll();
@@ -1869,6 +1903,7 @@ async function drawStripSilent(ctx, canvasEl, count){
     const bottomSpace = style === 'polaroid' ? 70 : 0;
     themes.push({name, style, bg, frame: bg, accent, bottomSpace});
     document.getElementById('adminThemeName').value = '';
+    saveAdminData();
     refreshThemeList();
     buildThemeThumbs();
     renderAll();
@@ -1890,6 +1925,7 @@ async function drawStripSilent(ctx, canvasEl, count){
       del.addEventListener('click', ()=>{
         effects.splice(i, 1);
         if(state.effect === e.id) state.effect = 'none';
+        saveAdminData();
         refreshEffectList();
         buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
         renderAll();
@@ -1907,6 +1943,7 @@ async function drawStripSilent(ctx, canvasEl, count){
     const id = 'fx_' + Date.now();
     effects.push({id, label: name, type, color});
     document.getElementById('adminEffectName').value = '';
+    saveAdminData();
     refreshEffectList();
     buildSwatchRow(document.getElementById('effectOptions'), effects, 'effect');
     renderAll();
